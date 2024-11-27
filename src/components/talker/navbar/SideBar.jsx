@@ -363,7 +363,6 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                         <Avatar alt="User Avatar" src={(user) && user.photoURL} />
                         <Box sx={{ marginLeft: 1 }}>
                             <Typography variant="body1" color='white'>{(user) && user.displayName}</Typography>
-                            <Typography variant="body2" color='white'>{(user) && user.email}</Typography>
                         </Box>
                     </Box>
 
@@ -384,7 +383,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                         <List sx={{ width: 240, bgcolor: '#2F2F2F', border: '1px solid #444343' }}>
                             {/* Email at the top */}
                             <ListItem>
-                                <Typography variant="body2" sx={{ color: 'white', py: '8px', px: '2px' }}>{(user) && user.email}</Typography>
+                                <Typography variant="body2" sx={{ color: 'white', py: '8px', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
                             </ListItem>
 
                             <Divider sx={{ bgcolor: '#444343' }} />

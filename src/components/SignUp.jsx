@@ -260,8 +260,8 @@ export default function Login() {
           </Stack>
         )}
         <div style={{ fontSize: "10px", marginTop: "16px" }} margin="left">
-          <p style={{ fontSize: '15px', display: 'inline' }}>Do you have an account?{" "}</p>
-          <small onClick={handleLoginClick} style={{ textDecoration: "underline", color: "#7b1fa2", fontSize: '13px', cursor: 'pointer' }}>
+          <p style={{ fontSize: '14px', display: 'inline', fontWeight: 400 }}>Do you have an account?{" "}</p>
+          <small onClick={handleLoginClick} style={{ color: "#009688", fontSize: '14px', cursor: 'pointer' }}>
             Login
           </small>
         </div>

@@ -10,8 +10,8 @@ import {
   browserSessionPersistence,
   setPersistence,
 } from "firebase/auth";
-import { setDoc, doc } from "firebase/firestore";
-import { db } from "../scripts/firebase";
+import { setDoc, doc, getDoc } from "firebase/firestore";
+import { db, auth, provider, signInWithPopup } from "../scripts/firebase";
 import { toast } from "react-toastify";
 import { supabase } from "../scripts/supabaseClient";
 
@@ -20,6 +20,47 @@ const initialState = {
   error: null,
   isAuthenticated: false,
 };
+
+export const handleSignInWithGoogle = createAsyncThunk(
+  "auth/handleSignInWithGoogle",
+  async (_, { rejectWithValue }) => {
+    console.log("trying to signIn");
+    // handling signIn with Google
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      const { uid, email, displayName, photoURL } = user;
+
+      // Set the display name for the user
+      await updateProfile(user, { displayName });
+
+      // Check if user exists in Firestore
+      const userDocRef = doc(db, "users", uid);
+      const userDoc = await getDoc(userDocRef);
+
+      if (!userDoc.exists()) {
+        // New user: Save to Firestore
+        await setDoc(doc(db, "Users", user.uid), {
+          name: user.displayName,
+          email: user.email,
+        });
+        // Also user: Save to Supabase
+        await supabase
+          .from("users") // Replace with your table name
+          .insert([
+            {
+              user_id: user.uid, // Replace with your column name and value
+              name: user.displayName,
+              email: user.email,
+              // Add more columns as needed
+            },
+          ]);
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
 
 export const handleSignup = createAsyncThunk(
   "auth/handleSignup",
@@ -58,7 +99,7 @@ export const handleSignup = createAsyncThunk(
             {
               user_id: user.uid, // Replace with your column name and value
               name: user.displayName,
-              email: user.email
+              email: user.email,
               // Add more columns as needed
             },
           ]);
@@ -198,6 +239,17 @@ export const authSlice = createSlice({
         state.loading = false;
         state.error =
           action.payload || "An error occurred, please try after someTime."; // Capture error message
+      })
+
+      // Handle signInWithGoogle Actions
+      .addCase(handleSignInWithGoogle.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(handleSignInWithGoogle.fulfilled, (state) => {
+      })
+      .addCase(handleSignInWithGoogle.rejected, (state, action) => {
+        state.error = action.payload;
+        console.log(state.error);
       });
   },
 });

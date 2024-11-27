@@ -21,7 +21,7 @@ import { useSelector } from 'react-redux';
 const ShareDialog = ({ open, handleClose }) => {
     const [copied, setCopied] = useState(false);
     const conversationId = useSelector((state) => state.conversations.activeConversationId);
-    const sharingLink = `http://localhost:5173/talker/share/${conversationId}`; // Example link
+    const sharingLink = `http://talkerai.netlify.app/talker/share/${conversationId}`; // Example link
 
     const handleCopyLink = (sharingLink) => {
         setCopied(true);

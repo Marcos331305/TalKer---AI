@@ -24,6 +24,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
+import SignInWithGoogle from "./SignInWithGoogle";
 
 // Email Validation
 const isEmail = (email) =>
@@ -137,6 +138,11 @@ export default function Login() {
     return <Loading message="Checking session, please wait..." />; // Display loading while checking session
   }
 
+  const handleForgotPassClick = () => {
+    dispatch(clearErrors());
+    navigate('/forgotPassword');
+  };
+
   return (
     <Box sx={{
       height: '100dvh',
@@ -146,8 +152,8 @@ export default function Login() {
       flexDirection: 'column',
       bgcolor: 'white',
       gap: {
-        xs: '40px',  // Gap for extra-small screens
-        sm: '65px',  // Gap for small screens
+        xs: '30px',  // Gap for extra-small screens
+        sm: '55px',  // Gap for small screens
       },
     }}>
       <Box sx={{
@@ -214,12 +220,33 @@ export default function Login() {
         </div>
 
         <div style={{ fontSize: "15px", display: 'flex', alignItems: 'center', marginTop: '10px' }}>
-          <Checkbox id="rememberMe-checkbox"
-            {...label}
-            size="medium"
-            onChange={(event) => setRememberMe(event.target.checked)}
-          />
-          Remember Me
+          <label
+            htmlFor="rememberMe-checkbox"
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              cursor: 'pointer',
+              userSelect: 'none',
+              WebkitTapHighlightColor: 'transparent', // Removes tap highlight color on mobile devices
+              fontWeight: 400
+            }}
+          >
+            <Checkbox
+              id="rememberMe-checkbox"
+              {...label}
+              size="medium"
+              onChange={(event) => setRememberMe(event.target.checked)}
+              disableRipple // Removes ripple effect
+              sx={{
+                '&.Mui-checked': { color: '#009688' }, 
+                '&:hover': { backgroundColor: 'transparent' }, // Removes hover background
+                '&:active': { backgroundColor: 'transparent' }, // Removes active background
+                '&:focus-visible': { outline: 'none' }, // Removes focus outline
+                '&.MuiTouchRipple-root': { display: 'none' }, // Ensures ripple is disabled
+              }}
+            />
+            Remember Me
+          </label>
         </div>
 
         <div style={{ marginTop: "10px" }}>
@@ -254,13 +281,16 @@ export default function Login() {
         )}
 
         <div style={{ marginTop: "16px", fontSize: "10px" }} margin="left">
-          <a style={{ fontSize: '15px' }}>Forgot Password</a>
+          <a onClick={handleForgotPassClick} style={{ fontSize: '14px', color: '#009688', cursor: 'pointer' }}>Forgot password?</a>
           <br />
-          <p style={{ display: 'inline', fontSize: '15px' }}>Don't have an account?{" "}</p>
-          <small onClick={handleSignupClick} style={{ textDecoration: "underline", color: "#7b1fa2", cursor: 'pointer', fontSize: '13px', display: 'inline' }}>
-            Register
+          <p style={{ display: 'inline', fontSize: '14px', fontWeight: 400 }}>New user?{" "}</p>
+          <small onClick={handleSignupClick} style={{ color: "#009688", cursor: 'pointer', fontSize: '14px', display: 'inline', fontWeight: 400 }}>
+            Register Here
           </small>
         </div>
+
+        {/* signInWithGoogle */}
+        <SignInWithGoogle />
       </Box>
     </Box>
   );

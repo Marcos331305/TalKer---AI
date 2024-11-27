@@ -8,6 +8,7 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import TalkerUi from "./components/talker/TalkerUi.jsx";
 import Mailverification from "./components/Mailverification.jsx";
 import ShareConversation from "./components/ShareConversation.jsx";
+import ForgotPassword from "./components/ForgotPassword.jsx";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: "/verifyMail",
     element: <Mailverification />
+  },
+  {
+    path: "/forgotPassword",
+    element: <ForgotPassword />
   },
   {
     path: "/talker",
