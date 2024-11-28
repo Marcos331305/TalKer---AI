@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from 'react-redux'
-import { clearErrors, handleSignup } from '../features/authSlice'
+import { clearErrors, handleForgotPassword, handleSignup } from '../features/authSlice'
 
 // Material UI Imports
 import {
     TextField,
     Button,
-    Box
+    Box,
+    Stack,
+    Alert
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -16,37 +18,32 @@ const isEmail = (email) =>
 export default function Login() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const authState = useSelector((state) => state.auth);
 
     //Inputs
     const [emailInput, setEmailInput] = useState('');
 
     // Inputs Errors
-    const [usernameError, setUsernameError] = useState(false);
     const [emailError, setEmailError] = useState(false);
-    const [passwordError, setPasswordError] = useState(false);
 
     // Overall Form Validity
     const [formValid, setFormValid] = useState();
     const [success, setSuccess] = useState();
 
-    // Handles Display and Hide Password
-    const handleClickShowPassword = () => setShowPassword((show) => !show);
-    const handleMouseDownPassword = (event) => {
-        event.preventDefault();
-    };
-
-    // Label for Checkbox
-    const label = { inputProps: { "aria-label": "Checkbox demo" } };
-
-    // Validation for onBlur Username
-    const handleUsername = () => {
-        if (!usernameInput) {
-            setUsernameError(true);
-            return;
+    // Simulating an error being set (for demonstration purposes)
+    useEffect(() => {
+        // Auto-hide form error after 5 seconds
+        if (formValid) {
+            const timer = setTimeout(() => setFormValid(''), 3000);
+            return () => clearTimeout(timer); // Cleanup timer
         }
 
-        setUsernameError(false);
-    };
+        // Auto-hide auth error after 5 seconds
+        if (authState.error) {
+            const timer = setTimeout(() => dispatch(clearErrors()), 3000);
+            return () => clearTimeout(timer); // Cleanup timer
+        }
+    }, [formValid, authState.error]);
 
     // Validation for onBlur Email
     const handleEmail = () => {
@@ -58,61 +55,21 @@ export default function Login() {
         setEmailError(false);
     };
 
-    // Validation for onBlur Password
-    const handlePassword = () => {
-        if (
-            !passwordInput ||
-            passwordInput.length < 5 ||
-            passwordInput.length > 20
-        ) {
-            setPasswordError(true);
-            return;
-        }
-
-        setPasswordError(false);
-    };
-
     //handle Submittion
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         setSuccess(null);
-        //First of all Check for Errors
-
-        // IF username error is true
-        if (usernameError || !usernameInput) {
-            setFormValid(
-                "Username is set btw 5 - 15 characters long. Please Re-Enter"
-            );
-            return;
-        }
 
         // If Email error is true
         if (emailError || !emailInput) {
             setFormValid("Email is Invalid. Please Re-Enter");
             return;
         }
-
-        // If Password error is true
-        if (passwordError || !passwordInput) {
-            setFormValid(
-                "Password is set btw 5 - 20 characters long. Please Re-Enter"
-            );
-            return;
-        }
         setFormValid(null);
 
-        // Writing my logic for signUp
-        dispatch(handleSignup({ usernameInput, emailInput, passwordInput, rememberMe }));
+        // logic for forgottingPassword
+        await dispatch(handleForgotPassword(emailInput));
 
-        if (authState.isAuthenticated) {
-            setUsernameInput('');
-            setEmailInput('');
-            setPasswordInput('');
-        }
-    };
-
-    const handleLoginClick = () => {
-        dispatch(clearErrors());
-        navigate('/');
+        setEmailInput('');
     };
 
     return (
@@ -172,8 +129,27 @@ export default function Login() {
                     </Button>
                 </div>
 
+                {/* Show Form Error if any */}
+                {formValid && (
+                    <Stack sx={{ width: "100%", paddingTop: "10px" }} spacing={2}>
+                        <Alert severity="error" size="small">
+                            {formValid}
+                        </Alert>
+                    </Stack>
+                )}
+                {authState.error && (
+                    <Stack sx={{ width: "100%", paddingTop: "10px" }} spacing={2}>
+                        <Alert severity="error" size="small">
+                            {authState.error}
+                        </Alert>
+                    </Stack>
+                )}
+
                 <div style={{ fontSize: "10px", marginTop: "16px" }} margin="left">
-                    <p onClick={() => navigate('/')} style={{ fontSize: '15px', display: 'inline', fontWeight: 400, color: '#009688', cursor: 'pointer' }}>Back to TalkerAI Web</p>
+                    <p onClick={() => {
+                        dispatch(clearErrors())
+                        navigate('/')
+                    }} style={{ fontSize: '15px', display: 'inline', fontWeight: 400, color: '#009688', cursor: 'pointer' }}>Back to TalkerAI Web</p>
                 </div>
             </Box>
         </Box>

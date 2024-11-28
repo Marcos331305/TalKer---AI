@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 const isEmail = (email) =>
   /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
 
-export default function Login() {  
+export default function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authState = useSelector((state) => state.auth);
@@ -51,6 +51,21 @@ export default function Login() {
   // Overall Form Validity
   const [formValid, setFormValid] = useState();
   const [success, setSuccess] = useState();
+
+  // Simulating an error being set (for demonstration purposes)
+  useEffect(() => {
+    // Auto-hide form error after 5 seconds
+    if (formValid) {
+      const timer = setTimeout(() => setFormValid(''), 3000);
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+
+    // Auto-hide auth error after 5 seconds
+    if (authState.error) {
+      const timer = setTimeout(() => dispatch(clearErrors()), 3000);
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [formValid, authState.error]);
 
   // Handles Display and Hide Password
   const handleClickShowPassword = () => setShowPassword((show) => !show);
@@ -126,7 +141,7 @@ export default function Login() {
     // Writing my logic for signUp
     dispatch(handleSignup({ usernameInput, emailInput, passwordInput, rememberMe }));
 
-    if(authState.isAuthenticated){
+    if (authState.isAuthenticated) {
       setUsernameInput('');
       setEmailInput('');
       setPasswordInput('');

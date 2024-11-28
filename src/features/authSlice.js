@@ -9,6 +9,7 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
   setPersistence,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { setDoc, doc, getDoc } from "firebase/firestore";
 import { db, auth, provider, signInWithPopup } from "../scripts/firebase";
@@ -21,10 +22,31 @@ const initialState = {
   isAuthenticated: false,
 };
 
+// Thunk for generating the AiResponse/message
+export const handleForgotPassword = createAsyncThunk(
+  "auth/handleForgotPassword",
+  async (emailInput, { rejectWithValue }) => {
+    // handling forgotPassword logic
+    try {
+      // Check if user exists in our Firestore
+      const userDocRef = doc(db, "users", emailInput);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        // if userRegistered then only send the passwordReset link
+        await sendPasswordResetEmail(auth, emailInput);
+      } else {
+        // otherWise reject with an custom error
+        return rejectWithValue("Email is not registered in our system.");
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const handleSignInWithGoogle = createAsyncThunk(
   "auth/handleSignInWithGoogle",
   async (_, { rejectWithValue }) => {
-    console.log("trying to signIn");
     // handling signIn with Google
     try {
       const result = await signInWithPopup(auth, provider);
@@ -243,13 +265,32 @@ export const authSlice = createSlice({
 
       // Handle signInWithGoogle Actions
       .addCase(handleSignInWithGoogle.pending, (state) => {
+        state.loading = true;
         state.error = null;
       })
       .addCase(handleSignInWithGoogle.fulfilled, (state) => {
+        state.loading = false;
       })
       .addCase(handleSignInWithGoogle.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
         console.log(state.error);
+      })
+
+      // Handle forgotPassword Actions
+      .addCase(handleForgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(handleForgotPassword.fulfilled, (state) => {
+        state.loading = false;
+        toast.success("Password reset link, sent at provided Email!!", {
+          position: "top-center",
+        });
+      })
+      .addCase(handleForgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

@@ -73,6 +73,21 @@ export default function Login() {
   const [formValid, setFormValid] = useState();
   const [success, setSuccess] = useState();
 
+  // Simulating an error being set (for demonstration purposes)
+  useEffect(() => {
+    // Auto-hide form error after 3 seconds
+    if (formValid) {
+      const timer = setTimeout(() => setFormValid(''), 3000);
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+
+    // Auto-hide auth error after 5 seconds
+    if (authState.error) {
+      const timer = setTimeout(() => dispatch(clearErrors()), 3000);
+      return () => clearTimeout(timer); // Cleanup timer
+    }
+  }, [formValid, authState.error]);
+
   // Handles Display and Hide Password
   const handleClickShowPassword = () => setShowPassword((show) => !show);
   const handleMouseDownPassword = (event) => {
@@ -238,7 +253,7 @@ export default function Login() {
               onChange={(event) => setRememberMe(event.target.checked)}
               disableRipple // Removes ripple effect
               sx={{
-                '&.Mui-checked': { color: '#009688' }, 
+                '&.Mui-checked': { color: '#009688' },
                 '&:hover': { backgroundColor: 'transparent' }, // Removes hover background
                 '&:active': { backgroundColor: 'transparent' }, // Removes active background
                 '&:focus-visible': { outline: 'none' }, // Removes focus outline
