@@ -22,7 +22,10 @@ const ChatArea = ({ chatContainerRef }) => {
         if (conversationId) {
             // Fetch messages for the given conversationId
             dispatch(fetchMessages(conversationId));
-
+        }
+    }, []);
+    useEffect(() => {
+        if (conversationId) {
             // Set active conversation title if conversations are available
             if (Array.isArray(conversations) && conversations.length > 0) {
                 const activeConversation = conversations.find(
