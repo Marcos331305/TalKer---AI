@@ -24,7 +24,7 @@ const ShareConversation = () => {
     <Box sx={{ px: 2, pt: { xs: 2, sm: '40px' }, maxWidth: 800, margin: '0 auto', display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* React Helmet for Dynamic Title */}
       <Helmet>
-        <title>{conversation ? `TalKer - ${conversation.title}` : 'TalKer'}</title>
+        <title>{conversation ? `TalKerAI - ${conversation.title}` : 'TalKerAI'}</title>
       </Helmet>
 
       {/* Conversation heading & creation date */}

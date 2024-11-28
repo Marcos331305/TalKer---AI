@@ -25,6 +25,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
 import SignInWithGoogle from "./SignInWithGoogle";
+import { Helmet } from 'react-helmet-async';
 
 // Email Validation
 const isEmail = (email) =>
@@ -171,6 +172,11 @@ export default function Login() {
         sm: '55px',  // Gap for small screens
       },
     }}>
+      {/* React Helmet for Dynamic Title */}
+      <Helmet>
+        <title>Login - TalKerAI</title>
+      </Helmet>
+
       <Box sx={{
         width: '80px',
       }}>

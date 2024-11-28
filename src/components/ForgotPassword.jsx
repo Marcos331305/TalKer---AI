@@ -11,6 +11,7 @@ import {
     Alert
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 
 const isEmail = (email) =>
     /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(email);
@@ -85,6 +86,10 @@ export default function Login() {
                 sm: '65px',  // Gap for small screens
             },
         }}>
+            {/* React Helmet for Dynamic Title */}
+            <Helmet>
+                <title>Forgot Password - TalKerAI</title>
+            </Helmet>
             <Box sx={{
                 width: '80px',
             }}>

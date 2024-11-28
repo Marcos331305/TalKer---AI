@@ -23,6 +23,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import LoginIcon from "@mui/icons-material/Login";
 import { useNavigate } from "react-router-dom";
+import { Helmet } from 'react-helmet-async';
 
 // Validations
 
@@ -166,6 +167,11 @@ export default function Login() {
         sm: '65px',  // Gap for small screens
       },
     }}>
+      {/* React Helmet for Dynamic Title */}
+      <Helmet>
+        <title>Register - TalKerAI</title>
+      </Helmet>
+
       {/* LoadingView */}
       <Loading loading={loading} message={'Registering, please wait...'} />
       <Box sx={{

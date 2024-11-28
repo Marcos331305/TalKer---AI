@@ -48,7 +48,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     const [anchorElMore, setAnchorElMore] = useState(null); // for moreIcon
     const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
     // fetch conversationsState from the conversationsSlice to use in sideBars ui
-    const { conversations = [], loading } = useSelector((state) => state.conversations || {});
+    const { conversations = [] } = useSelector((state) => state.conversations || {});
     
     useEffect(() => {
         if (Array.isArray(conversations) && conversations.length > 0 && activeConversationId) {

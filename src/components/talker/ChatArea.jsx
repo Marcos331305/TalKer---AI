@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import UserMessageContainer from './UserMessageContainer'
 import AiMessageContainer from './AiMessageContainer'
@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { fetchMessages } from '../../features/messageSlice'
 import Typewriter from 'typewriter-effect';
+import { Helmet } from 'react-helmet-async'
 
 const ChatArea = ({ chatContainerRef }) => {
     const { conversationId: conversationIdAsString } = useParams(); // getting the conversationId from the routeParameters
@@ -13,13 +14,29 @@ const ChatArea = ({ chatContainerRef }) => {
     const dispatch = useDispatch();
     const messages = useSelector((state) => state.messages.messages);
     const loading = useSelector((state) => state.messages.loading);
+    const { conversations = [] } = useSelector((state) => state.conversations || {});
+    const [activeConversationTitle, setActiveConversationTitle] = useState('');
 
-    // getting the conversationMessages only if the conversationId is available
+    // getting the conversationMessages and title only if the conversationId is available
     useEffect(() => {
         if (conversationId) {
+            // Fetch messages for the given conversationId
             dispatch(fetchMessages(conversationId));
+
+            // Set active conversation title if conversations are available
+            if (Array.isArray(conversations) && conversations.length > 0) {
+                const activeConversation = conversations.find(
+                    (convo) => convo.conversation_id === conversationId
+                );
+                if (activeConversation) {
+                    setActiveConversationTitle(activeConversation.title);
+                }
+            }
+        } else {
+            // Reset the title for a new conversation
+            setActiveConversationTitle('TalKerAI');
         }
-    }, []);
+    }, [conversationId, conversations, dispatch]);
 
     return (
         <Box ref={chatContainerRef}
@@ -30,6 +47,10 @@ const ChatArea = ({ chatContainerRef }) => {
                 position: 'relative',
             }}
         >
+            {/* React Helmet for Dynamic Title */}
+            <Helmet>
+                <title>{activeConversationTitle || 'TalKerAI'}</title>
+            </Helmet>
             {/* Loading View */}
             {/* <Loading loading={loading} message={'Loading Conversation, please wait...'} /> */}
             {/* User Messages & their Responses */}
