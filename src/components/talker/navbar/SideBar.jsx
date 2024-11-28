@@ -34,7 +34,7 @@ import {
 } from '../../../scripts/app';
 import ConversationsArea from './ConversationsArea';
 
-const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {    
+const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     const [user, setUser] = useState(null);
     const [clicked, setClicked] = useState(false);
     const navigate = useNavigate();
@@ -49,7 +49,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
     // fetch conversationsState from the conversationsSlice to use in sideBars ui
     const { conversations = [] } = useSelector((state) => state.conversations || {});
-    
+
     useEffect(() => {
         if (Array.isArray(conversations) && conversations.length > 0 && activeConversationId) {
             const activeConversation = conversations.find(
@@ -59,7 +59,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                 setActiveConversationTitle(activeConversation.title);
             }
         }
-    }, [conversations, activeConversationId, renameDialogOpen]); 
+    }, [conversations, activeConversationId, renameDialogOpen]);
 
     // Only call the function if conversations are available
     const groupedConversations = (Array.isArray(conversations) && conversations.length > 0)
@@ -198,7 +198,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
         setRenameDialogOpen(false);
     };
 
-    const handleRename = async() => {
+    const handleRename = async () => {
         // if inputField is empty
         if (activeConversationTitle.trim() === "") {
             toast.error('Title can not be empty', {
@@ -361,8 +361,21 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                     {/* userAccount section */}
                     <Box onClick={handleClick} sx={{ display: 'flex', alignItems: 'center', py: '8px', px: '14px', marginTop: 'auto', backgroundColor: open ? '#212121' : 'transparent', }}>
                         <Avatar alt="User Avatar" src={(user) && user.photoURL} />
-                        <Box sx={{ marginLeft: 1 }}>
-                            <Typography variant="body1" color='white'>{(user) && user.displayName}</Typography>
+                        <Box sx={{ marginLeft: 1, width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+                            <Typography
+                                fontSize={'14px'}
+                                variant="body1"
+                                color='white'
+                                sx={{
+                                    display: 'inline-block',
+                                    textOverflow: 'ellipsis',
+                                    overflow: 'hidden',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '100%',
+                                }}
+                            >
+                                {user && user.displayName}
+                            </Typography>
                         </Box>
                     </Box>
 

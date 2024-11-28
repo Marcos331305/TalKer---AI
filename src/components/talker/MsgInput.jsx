@@ -11,6 +11,7 @@ import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import StopIcon from "@mui/icons-material/Stop";
+import AttachFileIcon from '@mui/icons-material/AttachFile';
 
 const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -178,7 +179,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const resizeObserver = new ResizeObserver(() => {
       if (messageInputRef.current) {
         const inputFieldHeight = messageInputRef.current.scrollHeight;
-        const buttonPosition = inputFieldHeight > 100 ? '-56px' : '-56px'; // Adjust as needed
+        const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
         setScrollButtonPosition(buttonPosition);
       }
     });
@@ -313,8 +314,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         mx: {
           sm: "auto",
         },
-        position: "relative",
-        pt: "4px",
+        position: "relative"
       }}
     >
       {/* scrollDown button */}
@@ -329,8 +329,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             color: 'white',
             borderRadius: '50%',
             border: '1px solid #383737',
-            width: 40,
-            height: 40,
+            width: 32,
+            height: 32,
             zIndex: 1000,
             boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
             '&:hover': {
@@ -338,30 +338,30 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             },
           }}
         >
-          <ArrowDownwardIcon />
+          <ArrowDownwardIcon fontSize='small' />
         </IconButton>
       )}
 
-      {/* InputField and SendBtn Container */}
+      {/* InputField and Icon's Container */}
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          mx: "12px",
-          gap: "6px",
+          flexDirection: 'column',
+          backgroundColor: "#2F2F2F",
+          borderRadius: "1.5rem",
+          mx: '12px',
+          px: '10px',
+          py: '4px',
         }}
       >
-        {/* Input Field & recordingBtn container */}
+        {/* Input Field container */}
         <Box
           sx={{
             flex: 1,
             display: "flex",
             alignItems: "center",
-            backgroundColor: "#2F2F2F",
-            borderRadius: "30px",
-            py: message.trim() ? "7px" : "3px",
-            pl: "7px",
-            pr: "5px",
+            px: '8px',
+            py: '6px'
           }}
         >
           <InputBase
@@ -377,7 +377,6 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
               flex: 1, // Allow input to take all available space
               fontSize: '16px',
               color: 'white',
-              px: '12px',
               borderRadius: '8px',
               '& .MuiInputBase-input': {
                 border: 'none',
@@ -389,52 +388,74 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
               },
             }}
           />
-          {/* recordingBtn */}
-          <IconButton
-            onClick={() => {
-              if (speechApiSupported) {
-                toggleRecording() // Toggling the recording state
-                if (!isRecording) {
-                  startTimer(); // Start the timer only if recording is about to begin
-                  startRecognition()
-                } else {
-                  stopTimer(); // Stop the timer when recording ends
-                  stopRecognition()
-                }
-              }
-              if (speechApiSupported === false) {
-                toggleRecording()
-              }
-            }}
-            sx={{
-              color: "white",
-              marginLeft: "8px",
-              display: message.trim() ? "none" : "flex",
-            }}
-          >
-            {isRecording ? <MicOffIcon /> : <MicIcon />}
-          </IconButton>
         </Box>
-
-        {/* Send Button */}
-        <IconButton
-          onClick={handleSend}
-          disabled={!message.trim()}
-          sx={{
-            backgroundColor: !message.trim() ? '#676767 !important' : 'white',
-            borderRadius: '50%', // Fully rounded button
-            padding: '8px',
-            '&:hover': {
-              backgroundColor: !message.trim() ? '#676767 !important' : 'white',
-            },
-          }}
-        >
-          <KeyboardArrowUpIcon
-            sx={{
-              color: !message.trim() ? '#2F2F2F !important' : '#000000',
-            }}
-          />
-        </IconButton>
+        {/* Icon's Container */}
+        <Box sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          py: '6px',
+          alignItems: 'center'
+        }}>
+          {/* fileUpload Icon */}
+          <IconButton sx={{
+            color: 'white',
+            p: 0,
+            pl: '1px'
+          }} aria-label="upload file">
+            <AttachFileIcon fontSize='medium' />
+          </IconButton>
+          {/* microphone and sendBtn container */}
+          <Box sx={{
+            display: 'flex',
+            gap: '4px',
+            alignItems: 'center'
+          }}>
+            {/* microphoneIcon */}
+            <IconButton
+              onClick={() => {
+                if (speechApiSupported) {
+                  toggleRecording() // Toggling the recording state
+                  if (!isRecording) {
+                    startTimer(); // Start the timer only if recording is about to begin
+                    startRecognition()
+                  } else {
+                    stopTimer(); // Stop the timer when recording ends
+                    stopRecognition()
+                  }
+                }
+                if (speechApiSupported === false) {
+                  toggleRecording()
+                }
+              }}
+              sx={{
+                color: "white",
+                padding: '4px',
+                display: message.trim() ? "none" : "flex",
+              }}
+            >
+              {isRecording ? <MicOffIcon /> : <MicIcon />}
+            </IconButton>
+            {/* Send Button */}
+            <IconButton
+              onClick={handleSend}
+              disabled={!message.trim()}
+              sx={{
+                backgroundColor: !message.trim() ? '#676767 !important' : 'white',
+                borderRadius: '50%', // Fully rounded button
+                padding: '4px',
+                '&:hover': {
+                  backgroundColor: !message.trim() ? '#676767 !important' : 'white',
+                },
+              }}
+            >
+              <KeyboardArrowUpIcon
+                sx={{
+                  color: !message.trim() ? '#2F2F2F !important' : '#000000',
+                }}
+              />
+            </IconButton>
+          </Box>
+        </Box>
       </Box>
 
       {/* Recording UI with Sliding Animation */}
@@ -504,7 +525,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       <Typography Typography
         variant="body2"
         color="primary"
-        sx={{ padding: "8px", textAlign: "center" }}
+        sx={{ padding: "8px", textAlign: "center", fontSize: '12px' }}
       >
         TalKer can make mistakes.Check important info.
       </Typography>
