@@ -9,6 +9,7 @@ import Typewriter from 'typewriter-effect';
 import { Helmet } from 'react-helmet-async'
 
 const ChatArea = ({ chatContainerRef }) => {
+    const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
     const { conversationId: conversationIdAsString } = useParams(); // getting the conversationId from the routeParameters
     const conversationId = conversationIdAsString ? Number(conversationIdAsString) : null;
     const dispatch = useDispatch();
@@ -40,6 +41,23 @@ const ChatArea = ({ chatContainerRef }) => {
             setActiveConversationTitle('TalKerAI');
         }
     }, [conversationId, conversations, dispatch]);
+
+    // Scroll to the bottom of the chat area
+    const scrollToBottom = () => {
+        if (chatContainerRef.current) {
+            chatContainerRef.current.scrollTo({
+                top: chatContainerRef.current.scrollHeight,
+                behavior: 'smooth',
+            });
+        }
+    };
+    // Handle scroll to bottom whenever the typing effect finishes
+    useEffect(() => {
+        scrollToBottom();
+        if (isTypingEffectFinished) {
+            scrollToBottom(); // Scroll to the bottom once the typing effect is finished
+        }
+    }, [isTypingEffectFinished, messages, conversationId]);
 
     return (
         <Box ref={chatContainerRef}
@@ -95,7 +113,7 @@ const ChatArea = ({ chatContainerRef }) => {
                         {msg.sender === 'user' ? (
                             <UserMessageContainer message={msg.content} />
                         ) : (
-                            <AiMessageContainer message={msg.content} isLoading={loading && msg.sender === 'TalKer' && !msg.content} isNewMessage={msg.isNewMessage} />
+                            <AiMessageContainer message={msg.content} isLoading={loading && msg.sender === 'TalKer' && !msg.content} isNewMessage={msg.isNewMessage} setIsTypingEffectFinished={setIsTypingEffectFinished} chatContainerRef={chatContainerRef} />
                         )}
                     </Box>
                 ))

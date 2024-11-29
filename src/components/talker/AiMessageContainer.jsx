@@ -22,13 +22,23 @@ const Logo = styled('img')({
   height: '20px',
 });
 
-const AiMessageContainer = ({ message, isLoading, isNewMessage }) => {
+const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffectFinished, chatContainerRef }) => {
   // Parse the message into interleaved text and code blocks
   const content = parseTalKerResponse(message);
 
   // State management for typewriterEffect
   const [visibleText, setVisibleText] = useState(''); // Visible part of the text
   const [typingIndex, setTypingIndex] = useState(0); // Tracks the typing progress
+
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  };
+
   // typeWriter effect only for newelyGenerated responses
   useEffect(() => {
     // If it's a new message and hasn't been typed yet, apply typewriter effect
@@ -44,8 +54,10 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage }) => {
         if (typingIndex < fullText.length) {
           setVisibleText((prev) => prev + fullText[typingIndex]);
           setTypingIndex((prev) => prev + 1);
+          scrollToBottom(); // Scroll as the text is typed
         } else {
           clearInterval(typingInterval); // Stop typing
+          setIsTypingEffectFinished(true); // Mark typing effect as finished
         }
       };
 
