@@ -4,7 +4,7 @@ import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { useSelector, useDispatch } from 'react-redux'
-import { addMsg, storeMsgInSupabase, talkerResponse } from '../../features/messageSlice'
+import { addMsg, storeMsgInSupabase, talkerResponse, updateIsNewMessage } from '../../features/messageSlice'
 import { addConversation, createConversationInSupabase, fetchConversations, generateConversationTitle, setActiveConversationId, setActiveIndex } from '../../features/conversationsSlice'
 import { generateUniqueId } from '../../scripts/app'
 import { getAuth } from 'firebase/auth';
@@ -69,7 +69,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const talkerMsg = {
       id: generateUniqueId(),
       content: '',
-      sender: 'TalKer'
+      sender: 'TalKer',
+      isNewMessage: true // for happening typewriterEffect only once
     };
     dispatch(addMsg(talkerMsg));
 
@@ -105,7 +106,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         // Save the new conversation and messages to Supabase
         await dispatch(createConversationInSupabase(conversation));
         dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: conversation.conversation_id }));
-        dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: conversation.conversation_id }));
+        await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: conversation.conversation_id }));
+        dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
       } catch (error) {
         const now = new Date();
         const untitledConversation = {
@@ -130,7 +132,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       }
     } else {
       dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: activeConversationId }));
-      dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: activeConversationId }));
+      await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: activeConversationId }));
+      dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
     }
   };
 

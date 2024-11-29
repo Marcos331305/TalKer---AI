@@ -9,6 +9,22 @@ const initialState = {
   error: null,
 };
 
+// Define the thunk to update isNewMessage to false for tywriterEffect stopping
+export const updateIsNewMessage = createAsyncThunk(
+  'messages/updateIsNewMessage',
+  async ({ messageId }, { rejectWithValue }) => {
+    try {
+      const { data, error } = await supabase
+        .from('messages')
+        .update({ isNewMessage: false })
+        .eq('message_id', messageId); 
+      return { messageId }; 
+    } catch (error) {
+      return rejectWithValue(error.message); 
+    }
+  }
+);
+
 // Thunk for generating the AiResponse/message
 export const talkerResponse = createAsyncThunk(
   "messages/talkerResponse",
