@@ -137,71 +137,64 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     }
   };
 
-  // Handling Scrolling of chatArea
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
+// Handling Scrolling of chatArea
+const scrollToBottom = () => {
+  if (chatContainerRef.current) {
+    chatContainerRef.current.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: 'smooth',
+    });
+  }
+};
+useEffect(() => {
+  const chatContainer = chatContainerRef.current;
+
+  const handleScroll = () => {
+    if (chatContainer) {
+      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+      setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
     }
   };
-  useEffect(() => {
-    // 1. Handle scroll events
-    const chatContainer = chatContainerRef.current;
-    const handleScroll = () => {
-      if (chatContainer) {
-        const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
-      }
-    };
 
+  if (chatContainer) {
+    chatContainer.addEventListener('scroll', handleScroll);
+  }
+
+  // Only scroll to bottom when user is already at the bottom of the chat
+  const isAtBottom = chatContainer?.scrollHeight - chatContainer?.scrollTop === chatContainer?.clientHeight;
+
+  if (messages.length > 0 && isAtBottom) {
+    scrollToBottom(); // Scroll to bottom only if user is at the bottom
+  }
+
+  if (!loading && isAtBottom) {
+    scrollToBottom(); // Scroll to bottom when loading finishes, only if user is at the bottom
+  }
+
+  // Dynamically adjust button position based on input height
+  const resizeObserver = new ResizeObserver(() => {
+    if (messageInputRef.current) {
+      const inputFieldHeight = messageInputRef.current.scrollHeight;
+      const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
+      setScrollButtonPosition(buttonPosition);
+    }
+  });
+
+  if (messageInputRef.current) {
+    resizeObserver.observe(messageInputRef.current); // Observe input height changes
+  }
+
+  // Cleanup functions for both scroll event listener and resize observer
+  return () => {
     if (chatContainer) {
-      chatContainer.addEventListener('scroll', handleScroll);
+      chatContainer.removeEventListener('scroll', handleScroll);
     }
-
-    // 2. Scroll to bottom when messages or loading state changes
-    const scrollToBottom = () => {
-      if (chatContainerRef.current) {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
-    };
-
-    if (messages.length > 0) {
-      scrollToBottom(); // Scroll to bottom on message change
-    }
-
-    if (!loading) {
-      scrollToBottom(); // Scroll to bottom when loading finishes
-    }
-
-    // 3. Dynamically adjust button position based on input height
-    const resizeObserver = new ResizeObserver(() => {
-      if (messageInputRef.current) {
-        const inputFieldHeight = messageInputRef.current.scrollHeight;
-        const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
-        setScrollButtonPosition(buttonPosition);
-      }
-    });
 
     if (messageInputRef.current) {
-      resizeObserver.observe(messageInputRef.current); // Observe input height changes
+      resizeObserver.unobserve(messageInputRef.current); // Clean up observer
     }
-
-    // Cleanup functions for both scroll event listener and resize observer
-    return () => {
-      if (chatContainer) {
-        chatContainer.removeEventListener('scroll', handleScroll);
-      }
-
-      if (messageInputRef.current) {
-        resizeObserver.unobserve(messageInputRef.current); // Clean up observer
-      }
-    };
-  }, [messages, loading]); // Dependencies: Runs on message change or loading state change
+  };
+}, [messages, loading]); // Dependencies: Runs on message change or loading state change
 
   // Handling voiceInput functionality
   const toggleRecording = () => {

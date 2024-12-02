@@ -10,7 +10,7 @@ import { Helmet } from 'react-helmet-async'
 
 const ChatArea = ({ chatContainerRef }) => {
     const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
-    const { conversationId: conversationIdAsString } = useParams(); // getting the conversationId from the routeParameters
+    const { conversationId: conversationIdAsString } = useParams();
     const conversationId = conversationIdAsString ? Number(conversationIdAsString) : null;
     const dispatch = useDispatch();
     const messages = useSelector((state) => state.messages.messages);
@@ -18,46 +18,42 @@ const ChatArea = ({ chatContainerRef }) => {
     const { conversations = [] } = useSelector((state) => state.conversations || {});
     const [activeConversationTitle, setActiveConversationTitle] = useState('');
 
-    // getting the conversationMessages and title only if the conversationId is available
+    // Fetching messages based on conversationId
     useEffect(() => {
         if (conversationId) {
-            // Fetch messages for the given conversationId
             dispatch(fetchMessages(conversationId));
         }
-    }, []);
+    }, [conversationId, dispatch]);
+
+    // Set active conversation title
     useEffect(() => {
         if (conversationId) {
-            // Set active conversation title if conversations are available
-            if (Array.isArray(conversations) && conversations.length > 0) {
-                const activeConversation = conversations.find(
-                    (convo) => convo.conversation_id === conversationId
-                );
-                if (activeConversation) {
-                    setActiveConversationTitle(activeConversation.title);
-                }
+            const activeConversation = conversations.find(
+                (convo) => convo.conversation_id === conversationId
+            );
+            if (activeConversation) {
+                setActiveConversationTitle(activeConversation.title);
             }
         } else {
-            // Reset the title for a new conversation
             setActiveConversationTitle('TalKerAI');
         }
-    }, [conversationId, conversations, dispatch]);
+    }, [conversationId, conversations]);
 
-    // Scroll to the bottom of the chat area
-    const scrollToBottom = () => {
+    // Reset scroll position to the top whenever the conversation changes
+    useEffect(() => {
         if (chatContainerRef.current) {
-            chatContainerRef.current.scrollTo({
-                top: chatContainerRef.current.scrollHeight,
-                behavior: 'smooth',
-            });
+          chatContainerRef.current.scrollTop = 0; // Reset scroll position to the top when conversationId changes
         }
-    };
+      }, [conversationId]);    
+
     // Handle scroll to bottom whenever the typing effect finishes
     useEffect(() => {
-        scrollToBottom();
         if (isTypingEffectFinished) {
-            scrollToBottom(); // Scroll to the bottom once the typing effect is finished
+            if (chatContainerRef.current) {
+                chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+            }
         }
-    }, [isTypingEffectFinished, messages, conversationId]);
+    }, [isTypingEffectFinished]);
 
     return (
         <Box ref={chatContainerRef}
