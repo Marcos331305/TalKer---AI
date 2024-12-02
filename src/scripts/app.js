@@ -154,13 +154,14 @@ export function groupConversationsByTime(conversations = []) {
     } else if (isThisMonth(createdAt)) {
       grouped.previous30Days.push(convo);
     } else {
+      // Add the month directly to grouped object
       const monthKey = format(createdAt, "MMMM yyyy");
-      if (!grouped.previousMonths[monthKey]) {
-        grouped.previousMonths[monthKey] = [];
+      if (!grouped[monthKey]) {
+        grouped[monthKey] = [];
       }
-      grouped.previousMonths[monthKey].push(convo);
+      grouped[monthKey].push(convo);
     }
   });
-
+  
   return grouped;
 }
