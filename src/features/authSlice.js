@@ -15,6 +15,7 @@ import { setDoc, doc, getDoc } from "firebase/firestore";
 import { db, auth, provider, signInWithPopup } from "../scripts/firebase";
 import { toast } from "react-toastify";
 import { supabase } from "../scripts/supabaseClient";
+import { collection, query, where, getDocs } from "firebase/firestore";
 
 const initialState = {
   loading: false,
@@ -29,9 +30,10 @@ export const handleForgotPassword = createAsyncThunk(
     // handling forgotPassword logic
     try {
       // Check if user exists in our Firestore
-      const userDocRef = doc(db, "users", emailInput);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
+      const usersCollection = collection(db, "Users");
+      const userQuery = query(usersCollection, where("email", "==", emailInput));
+      const querySnapshot = await getDocs(userQuery);
+      if (!querySnapshot.empty) {
         // if userRegistered then only send the passwordReset link
         await sendPasswordResetEmail(auth, emailInput);
       } else {

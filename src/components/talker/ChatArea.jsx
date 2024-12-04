@@ -23,7 +23,7 @@ const ChatArea = ({ chatContainerRef }) => {
         if (conversationId) {
             dispatch(fetchMessages(conversationId));
         }
-    }, [conversationId, dispatch]);
+    }, []);
 
     // Set active conversation title
     useEffect(() => {
