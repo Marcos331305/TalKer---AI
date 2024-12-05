@@ -123,7 +123,6 @@ export const messageSlice = createSlice({
       .addCase(talkerResponse.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.log(state.error);
       })
       // handling action's for fetchingMessages
       .addCase(fetchMessages.pending, (state) => {

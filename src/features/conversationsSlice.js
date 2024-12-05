@@ -123,7 +123,8 @@ export const generateConversationTitle = createAsyncThunk(
       const result = await model.generateContent(prompt);
       return result.response.text(); // Assuming this returns the response as text
     } catch (error) {
-      return rejectWithValue(error.message);
+      // fallback to 'New Chat' title in the case of failure
+      return rejectWithValue('New Chat');
     }
   }
 );
@@ -133,7 +134,6 @@ const conversationsSlice = createSlice({
   initialState: {
     conversations: [],
     activeConversationId: null,
-    activeIndex: null, // for selectedConversation
     conversation: null, // shared conversation
     messages: [], // messages of sharedConversation
     status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'

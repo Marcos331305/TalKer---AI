@@ -81,55 +81,32 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const updatedTalkerMsg = { ...talkerMsg, content: talkerResponseContent };
 
     if (!activeConversationId) {
-      try {
-        // Generate a conversation title
-        const response = await dispatch(generateConversationTitle(userMessage.content));
-        const conversationTitle = response.payload;
-        const now = new Date();
-        const conversation = {
-          conversation_id: generateUniqueId(),
-          user_id: user.uid,
-          title: conversationTitle,
-          created_at: now.toISOString()
-        };
+      // Generate a conversation title
+      const response = await dispatch(generateConversationTitle(userMessage.content));
+      const conversationTitle = response.payload;
+      const now = new Date();
+      const conversation = {
+        conversation_id: generateUniqueId(),
+        user_id: user.uid,
+        title: conversationTitle,
+        created_at: now.toISOString()
+      };
 
-        // Add new conversation to Redux state
-        dispatch(addConversation(conversation));
-        dispatch(setActiveConversationId(conversation.conversation_id)); // Ensure the conversation is active
+      // Add new conversation to Redux state
+      dispatch(addConversation(conversation));
+      dispatch(setActiveConversationId(conversation.conversation_id)); // Ensure the conversation is active
 
-        // Short delay to allow the sidebar to recognize the new active conversation
-        setTimeout(() => {
-          dispatch(setActiveIndex(conversations.length)); // Last item index
-          navigate(`/talker/c/${conversation.conversation_id}`);
-        }, 50); // 50ms delay to ensure state and UI sync
+      // Short delay to allow the sidebar to recognize the new active conversation
+      setTimeout(() => {
+        dispatch(setActiveIndex(conversations.length)); // Last item index
+        navigate(`/talker/c/${conversation.conversation_id}`);
+      }, 50); // 50ms delay to ensure state and UI sync
 
-        // Save the new conversation and messages to Supabase
-        await dispatch(createConversationInSupabase(conversation));
-        dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: conversation.conversation_id }));
-        await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: conversation.conversation_id }));
-        dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
-      } catch (error) {
-        const now = new Date();
-        const untitledConversation = {
-          conversation_id: generateUniqueId(),
-          user_id: user.uid,
-          title: 'New Chat',
-          created_at: now.toISOString()
-        };
-
-        dispatch(addConversation(untitledConversation));
-        dispatch(setActiveConversationId(untitledConversation.conversation_id));
-
-        // Delay to ensure state is fully updated
-        setTimeout(() => {
-          dispatch(setActiveIndex(conversations.length));
-          navigate(`/talker/c/${untitledConversation.conversation_id}`);
-        }, 100);
-
-        dispatch(createConversationInSupabase(untitledConversation));
-        dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: untitledConversation.conversation_id }));
-        dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: untitledConversation.conversation_id }));
-      }
+      // Save the new conversation and messages to Supabase
+      await dispatch(createConversationInSupabase(conversation));
+      dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: conversation.conversation_id }));
+      await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: conversation.conversation_id }));
+      dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
     } else {
       dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: activeConversationId }));
       await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: activeConversationId }));
@@ -137,64 +114,64 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     }
   };
 
-// Handling Scrolling of chatArea
-const scrollToBottom = () => {
-  if (chatContainerRef.current) {
-    chatContainerRef.current.scrollTo({
-      top: chatContainerRef.current.scrollHeight,
-      behavior: 'smooth',
+  // Handling Scrolling of chatArea
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
+  };
+  useEffect(() => {
+    const chatContainer = chatContainerRef.current;
+
+    const handleScroll = () => {
+      if (chatContainer) {
+        const { scrollTop, scrollHeight, clientHeight } = chatContainer;
+        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
+      }
+    };
+
+    if (chatContainer) {
+      chatContainer.addEventListener('scroll', handleScroll);
+    }
+
+    // Only scroll to bottom when user is already at the bottom of the chat
+    const isAtBottom = chatContainer?.scrollHeight - chatContainer?.scrollTop === chatContainer?.clientHeight;
+
+    if (messages.length > 0 && isAtBottom) {
+      scrollToBottom(); // Scroll to bottom only if user is at the bottom
+    }
+
+    if (!loading && isAtBottom) {
+      scrollToBottom(); // Scroll to bottom when loading finishes, only if user is at the bottom
+    }
+
+    // Dynamically adjust button position based on input height
+    const resizeObserver = new ResizeObserver(() => {
+      if (messageInputRef.current) {
+        const inputFieldHeight = messageInputRef.current.scrollHeight;
+        const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
+        setScrollButtonPosition(buttonPosition);
+      }
     });
-  }
-};
-useEffect(() => {
-  const chatContainer = chatContainerRef.current;
-
-  const handleScroll = () => {
-    if (chatContainer) {
-      const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-      setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
-    }
-  };
-
-  if (chatContainer) {
-    chatContainer.addEventListener('scroll', handleScroll);
-  }
-
-  // Only scroll to bottom when user is already at the bottom of the chat
-  const isAtBottom = chatContainer?.scrollHeight - chatContainer?.scrollTop === chatContainer?.clientHeight;
-
-  if (messages.length > 0 && isAtBottom) {
-    scrollToBottom(); // Scroll to bottom only if user is at the bottom
-  }
-
-  if (!loading && isAtBottom) {
-    scrollToBottom(); // Scroll to bottom when loading finishes, only if user is at the bottom
-  }
-
-  // Dynamically adjust button position based on input height
-  const resizeObserver = new ResizeObserver(() => {
-    if (messageInputRef.current) {
-      const inputFieldHeight = messageInputRef.current.scrollHeight;
-      const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
-      setScrollButtonPosition(buttonPosition);
-    }
-  });
-
-  if (messageInputRef.current) {
-    resizeObserver.observe(messageInputRef.current); // Observe input height changes
-  }
-
-  // Cleanup functions for both scroll event listener and resize observer
-  return () => {
-    if (chatContainer) {
-      chatContainer.removeEventListener('scroll', handleScroll);
-    }
 
     if (messageInputRef.current) {
-      resizeObserver.unobserve(messageInputRef.current); // Clean up observer
+      resizeObserver.observe(messageInputRef.current); // Observe input height changes
     }
-  };
-}, [messages, loading]); // Dependencies: Runs on message change or loading state change
+
+    // Cleanup functions for both scroll event listener and resize observer
+    return () => {
+      if (chatContainer) {
+        chatContainer.removeEventListener('scroll', handleScroll);
+      }
+
+      if (messageInputRef.current) {
+        resizeObserver.unobserve(messageInputRef.current); // Clean up observer
+      }
+    };
+  }, [messages, loading]); // Dependencies: Runs on message change or loading state change
 
   // Handling voiceInput functionality
   const toggleRecording = () => {
