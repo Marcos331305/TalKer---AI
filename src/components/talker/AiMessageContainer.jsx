@@ -4,6 +4,8 @@ import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
 import { parseTalKerResponse } from '../../scripts/app'
 import CodeBox from './CodeBox';
+import { useSelector } from 'react-redux';
+import AiErrorContainer from './AiErrorContainer';
 
 // Styled container for AI messages
 const Container = styled(Box)({
@@ -23,12 +25,15 @@ const Logo = styled('img')({
 });
 
 const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffectFinished, chatContainerRef }) => {
+  // talkerResponseGeneration error
+  const talkerRespoError = useSelector((state) => state.messages.error);
+
   // Parse the message into interleaved text and code blocks
   const content = parseTalKerResponse(message);
 
   // State management for typewriterEffect
-  const [visibleText, setVisibleText] = useState(''); // Visible part of the text
-  const [typingIndex, setTypingIndex] = useState(0); // Tracks the typing progress
+  const [visibleText, setVisibleText] = useState(''); 
+  const [typingIndex, setTypingIndex] = useState(0); 
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
@@ -109,8 +114,10 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
           maxWidth: '100%',
         }}
       >
-        {isLoading ? (
-          <Typography sx={{ color: '#757575', mt: '18px' }}>
+         {talkerRespoError ? (
+          <AiErrorContainer message={"Hmm... something seems to have gone wrong."} />
+        ) : isLoading ? (
+          <Typography sx={{ color: "#757575", mt: "18px" }}>
             Generating, please wait...
           </Typography>
         ) : (
