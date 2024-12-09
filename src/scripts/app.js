@@ -94,7 +94,7 @@ export const parseTalKerResponse = (message) => {
   }
 
   // Add any remaining text after the last code block
-  if (lastIndex < message.length) {
+  if (message && lastIndex < message.length) {
     const remainingText = message.slice(lastIndex).trim();
     if (remainingText) {
       content.push({ type: "text", value: remainingText });

@@ -114,9 +114,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
           maxWidth: '100%',
         }}
       >
-         {talkerRespoError ? (
-          <AiErrorContainer message={"Hmm... something seems to have gone wrong."} />
-        ) : isLoading ? (
+         {isLoading ? (
           <Typography sx={{ color: "#757575", mt: "18px" }}>
             Generating, please wait...
           </Typography>

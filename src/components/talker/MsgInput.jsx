@@ -74,10 +74,20 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     };
     dispatch(addMsg(talkerMsg));
 
-    // Generate TalKer response & update the messageContent of added talkerMessage in reduxState
-    const { payload: talkerResponseObj } = await dispatch(talkerResponse({ prompt: userMessage.content, dummyMsgId: talkerMsg.id }));
-    const talkerResponseContent = talkerResponseObj.talkerResponse;
-    // // And now when the talkerResponse comes update the talkerMsg for storing in supabase
+    // Generate Talker response
+    let talkerResponseContent = "";
+    try {
+      const { payload: talkerResponseObj } = await dispatch(
+        talkerResponse({ prompt: userMessage.content, dummyMsgId: talkerMsg.id })
+      ).unwrap();
+
+      talkerResponseContent = talkerResponseObj.talkerResponse;
+    } catch (error) {
+      // If Talker response fails, provide an error message
+      talkerResponseContent = "Oops, something went wrong. Please try again or try with a different Prompt";
+    }
+
+    // Update Talker message with final content
     const updatedTalkerMsg = { ...talkerMsg, content: talkerResponseContent };
 
     if (!activeConversationId) {

@@ -11,16 +11,16 @@ const initialState = {
 
 // Define the thunk to update isNewMessage to false for tywriterEffect stopping
 export const updateIsNewMessage = createAsyncThunk(
-  'messages/updateIsNewMessage',
+  "messages/updateIsNewMessage",
   async ({ messageId }, { rejectWithValue }) => {
     try {
       const { data, error } = await supabase
-        .from('messages')
+        .from("messages")
         .update({ isNewMessage: false })
-        .eq('message_id', messageId); 
-      return { messageId }; 
+        .eq("message_id", messageId);
+      return { messageId };
     } catch (error) {
-      return rejectWithValue(error.message); 
+      return rejectWithValue(error.message);
     }
   }
 );
@@ -36,7 +36,10 @@ export const talkerResponse = createAsyncThunk(
       const talkerResponse = result.response.text();
       return { talkerResponse, dummyMsgId };
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue({
+        dummyMsgId,
+        error: error.message || "Failed to generate a response",
+      });
     }
   }
 );
@@ -96,7 +99,7 @@ export const messageSlice = createSlice({
     delMessages: (state, action) => {
       const { activeConversationId } = action.payload; // Get the conversationId from the action payload
       if (activeConversationId) {
-        console.log(JSON.stringify())
+        console.log(JSON.stringify());
         // Filter out the messages that belong to the given conversationId
         state.messages = state.messages.filter(
           (message) => message.conversation_id !== activeConversationId
@@ -121,8 +124,21 @@ export const messageSlice = createSlice({
         }
       })
       .addCase(talkerResponse.rejected, (state, action) => {
+        state.error = action.payload?.error || "An unknown error occurred";
+        const { dummyMsgId } = action.payload || {};
+        if (dummyMsgId) {
+          // Find the existing message using dummyMsgId
+          const existingTalkerMsg = state.messages.find(
+            (msg) => msg.id === dummyMsgId
+          );
+          
+          if (existingTalkerMsg) {
+            // Update the message content to indicate an error
+            existingTalkerMsg.content =
+            "Oops, something went wrong. Please try again or try with a different Prompt.";
+          }
+        }
         state.loading = false;
-        state.error = action.payload;
       })
       // handling action's for fetchingMessages
       .addCase(fetchMessages.pending, (state) => {
