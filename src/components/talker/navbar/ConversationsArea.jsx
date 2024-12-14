@@ -49,6 +49,7 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                             backgroundColor: activeConversationId === convo.conversation_id ? '#212121' : 'transparent',
                                             borderRadius: '8px',
                                             transition: 'background-color 0.3s ease',
+                                            cursor: 'pointer',
                                         }}
                                     >
                                         <ListItemText

@@ -4,21 +4,33 @@ import MsgInput from './MsgInput'
 import ChatArea from './ChatArea'
 import { Box } from '@mui/material'
 import { useRef } from 'react'
+import { useMediaQuery, useTheme } from '@mui/material';
+import UiWithDrawer from './UiWithDrawer'
 
 const TalkerUi = () => {
   // stateLifting
   const messageInputRef = useRef(null);
   const chatContainerRef = useRef(null);
   const [showScrollButton, setShowScrollButton] = useState(false);
+
+  const theme = useTheme();
+  const is768pxOrLarger = useMediaQuery('(min-width:768px)'); // Check if the screen width is 768px or Larger
   return (
     <Box sx={{
       display: 'flex',
       flexDirection: 'column',
       height: '100dvh', // Full height of the viewport
     }}>
-      <Nav showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />
-      <ChatArea messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} />
-      <MsgInput messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />
+      {/* Conditionally render uiWithPersistantDrawer and without it for different screen sizes */}
+      {is768pxOrLarger ? (
+        <UiWithDrawer setShowScrollButton={setShowScrollButton} />
+      ) : (
+        <>
+          <Nav showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />
+          <ChatArea messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} />
+          <MsgInput messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />
+        </>
+      )}
     </Box>
   )
 }
