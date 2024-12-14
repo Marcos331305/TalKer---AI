@@ -66,7 +66,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
         }
       };
 
-      typingInterval = setInterval(typeNextChar, 50); // Adjust speed (50ms per character)
+      typingInterval = setInterval(typeNextChar, 7); // Adjust speed (50ms per character)
 
       return () => clearInterval(typingInterval); // Cleanup on unmount or loading state change
     } else {

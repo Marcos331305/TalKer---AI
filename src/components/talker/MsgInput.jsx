@@ -144,7 +144,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
+        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 30);
       }
     };
 
