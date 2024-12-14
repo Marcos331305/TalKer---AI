@@ -4,8 +4,6 @@ import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
 import { parseTalKerResponse } from '../../scripts/app'
 import CodeBox from './CodeBox';
-import { useSelector } from 'react-redux';
-import AiErrorContainer from './AiErrorContainer';
 
 // Styled container for AI messages
 const Container = styled(Box)({
@@ -25,9 +23,6 @@ const Logo = styled('img')({
 });
 
 const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffectFinished, chatContainerRef }) => {
-  // talkerResponseGeneration error
-  const talkerRespoError = useSelector((state) => state.messages.error);
-
   // Parse the message into interleaved text and code blocks
   const content = parseTalKerResponse(message);
 

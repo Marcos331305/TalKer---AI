@@ -90,13 +90,12 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
         if (convoId !== activeConversationId) {
             // First, set the active conversation ID and activeEffect based on that Id
             dispatch(setActiveConversationId(convoId));
-
             // Then, fetch the messages for the selected conversation
             dispatch(fetchMessages(convoId));
-
+            // Hide scrollBottom button
+            setShowScrollButton(false);
             // Finally, navigate to the selected conversation route
             navigate(`/talker/c/${convoId}`);
-
             // Close the sidebar only if the conversation is different
             handleConBar();
         }
