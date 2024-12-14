@@ -77,9 +77,14 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     // Generate Talker response
     let talkerResponseContent = "";
     try {
-      const { payload: talkerResponseObj } = await dispatch(
+      const talkerResponseObj = await dispatch(
         talkerResponse({ prompt: userMessage.content, dummyMsgId: talkerMsg.id })
       ).unwrap();
+
+      // Explicitly throwing the erro if apiResponse is ok, But actual talkerResponse is missing
+      if (!talkerResponseObj || !talkerResponseObj.talkerResponse) {
+        throw new Error("TalkerAPI failed to generate Response !!!");
+      }
 
       talkerResponseContent = talkerResponseObj.talkerResponse;
     } catch (error) {
