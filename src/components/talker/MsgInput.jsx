@@ -37,21 +37,30 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
   // fetch conversation when the component Mounts
   useEffect(() => {
+    // Fetch conversations when the component mounts
     dispatch(fetchConversations(user.uid));
-
-    // Retrieve stored data from localStorage
-    const storedData = localStorage.getItem('activeConversationId');
-
-    if (storedData) {
-      try {
-        // Attempt to parse the stored data only if it's defined and not null
-        const activeConversationId = JSON.parse(storedData);
-        dispatch(setActiveConversationId(activeConversationId));
-      } catch (error) {
-        console.log("No activeConversationId Currently !!!");
+  
+    // Check if this is the first app load
+    const isFirstLoad = sessionStorage.getItem('isFirstLoad') === null;
+  
+    if (isFirstLoad) {
+      // Prevent auto-selection of activeConversationId on first load
+      sessionStorage.setItem('isFirstLoad', 'false');
+      dispatch(setActiveConversationId(null));
+    } else {
+      // Retrieve stored active conversation from localStorage for subsequent loads
+      const storedData = localStorage.getItem('activeConversationId');
+  
+      if (storedData) {
+        try {
+          const activeConversationId = JSON.parse(storedData);
+          dispatch(setActiveConversationId(activeConversationId));
+        } catch (error) {
+          console.error("Error parsing activeConversationId from localStorage:", error);
+        }
       }
     }
-  }, []);
+  }, []);  
 
   // handle Msg sending btn
   const handleSend = async () => {
