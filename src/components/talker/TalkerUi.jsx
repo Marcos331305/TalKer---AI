@@ -23,7 +23,7 @@ const TalkerUi = () => {
     }}>
       {/* Conditionally render uiWithPersistantDrawer and without it for different screen sizes */}
       {is768pxOrLarger ? (
-        <UiWithDrawer setShowScrollButton={setShowScrollButton} />
+        <UiWithDrawer showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} />
       ) : (
         <>
           <Nav showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />

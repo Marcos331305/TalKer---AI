@@ -294,15 +294,12 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     <Box
       sx={{
         maxWidth: {
-          xs: "600px",
+          xs: "100%",
+          md: '744px'
         },
-        width: {
-          sm: "600px",
-        },
-        mx: {
-          sm: "auto",
-        },
-        position: "relative"
+        width: '100%',
+        mx: 'auto',
+        position: "relative",
       }}
     >
       {/* scrollDown button */}
@@ -337,9 +334,12 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
           flexDirection: 'column',
           backgroundColor: "#2F2F2F",
           borderRadius: "1.5rem",
-          mx: '12px',
           px: '10px',
           py: '4px',
+          mx: '12px',
+          '@media (min-width: 768px)': {
+            mx: '20px', // Custom margin for exactly 768px and above
+          },
         }}
       >
         {/* Input Field container */}

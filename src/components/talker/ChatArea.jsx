@@ -42,9 +42,9 @@ const ChatArea = ({ chatContainerRef }) => {
     // Reset scroll position to the top whenever the conversation changes
     useEffect(() => {
         if (chatContainerRef.current) {
-          chatContainerRef.current.scrollTop = 0; // Reset scroll position to the top when conversationId changes
+            chatContainerRef.current.scrollTop = 0; // Reset scroll position to the top when conversationId changes
         }
-      }, [conversationId]);    
+    }, [conversationId]);
 
     // Handle scroll to bottom whenever the typing effect finishes
     useEffect(() => {
@@ -62,6 +62,31 @@ const ChatArea = ({ chatContainerRef }) => {
                 overflowY: 'auto', // Enable vertical scrolling
                 borderRadius: '8px', // Optional: rounded corners
                 position: 'relative',
+                marginLeft: 'auto',
+                marginRight: 'auto',
+                maxWidth: {
+                    xs: '100%',    // Full width for extra small screens
+                    sm: '100%',    // Full width for small screens
+                    md: '768px',   // Max width of 768px for medium and larger screens
+                },
+                width: '100% !important',  // Ensures the Box is 100% width within the maxWidth constraint
+                '&::-webkit-scrollbar': {
+                    width: '6px', // Adjust width of the scrollbar
+                },
+                '&::-webkit-scrollbar-track': {
+                    background: '#212121', // Ensure track background matches container
+                    borderRadius: '10px',
+                },
+                '&::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#424242', // Scroll thumb color
+                    borderRadius: '10px',
+                    '&:hover': {
+                        backgroundColor: '#676767', // Hover effect
+                    },
+                },
+                '&:hover::-webkit-scrollbar-thumb': {
+                    backgroundColor: '#676767', // Scroll thumb color on hover
+                },
             }}
         >
             {/* React Helmet for Dynamic Title */}

@@ -89,7 +89,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-export default function UiWithDrawer() {
+export default function UiWithDrawer({ showScrollButton, setShowScrollButton, messageInputRef, chatContainerRef }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
   const handleDrawerOpen = () => {
@@ -103,59 +103,79 @@ export default function UiWithDrawer() {
 
   return (
     <>
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar position="fixed" open={open} sx={{
-        bgcolor: '#212121',
-        boxShadow: 'none'
-      }}>
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={[
-              {
-                mr: 2,
-              },
-              open && { display: 'none' },
-            ]}
-          >
-            <MenuIcon color='primary' />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" color='#B4B4B4' sx={{
-            fontSize: '18px',
-          }}>
-            TalKerAI
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
+      <Box sx={{ display: 'flex', height: '100vh', width: '100% !important' }}>
+        <CssBaseline />
+        <AppBar open={open} sx={{
+          bgcolor: '#212121',
+          boxShadow: 'none',
+          position: 'fixed',
+          top: 0,
+          zIndex: 1100
+        }}>
+          <Toolbar>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={handleDrawerOpen}
+              edge="start"
+              sx={[
+                {
+                  mr: 2,
+                },
+                open && { display: 'none' },
+              ]}
+            >
+              <MenuIcon color='primary' />
+            </IconButton>
+            <Typography variant="h6" noWrap component="div" color='#B4B4B4' sx={{
+              fontSize: '18px',
+            }}>
+              TalKerAI
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Drawer
+          sx={{
             width: drawerWidth,
-            boxSizing: 'border-box',
-            bgcolor: '#171717'
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={open}
-      >
-        {/* SideBarForDrawer */}
-        <SideBarForDrawer handleDrawerClose={handleDrawerClose} />
-      </Drawer>
-      <Main open={open}>
-        {/* ChatArea */}
+            flexShrink: 0,
+            '& .MuiDrawer-paper': {
+              width: drawerWidth,
+              boxSizing: 'border-box',
+              bgcolor: '#171717'
+            },
+          }}
+          variant="persistent"
+          anchor="left"
+          open={open}
+        >
+          {/* SideBarForDrawer */}
+          <SideBarForDrawer
+            handleDrawerClose={handleDrawerClose}
+            setShowScrollButton={setShowScrollButton}
+          />
+        </Drawer>
+        <Main sx={{
+          display: 'flex',
+          flexDirection: 'column',
+          flexGrow: 1,
+          mt: '64px',
+          p: 0,
+          overflow: 'hidden'
+        }} open={open}>
+          {/* ChatArea */}
+          <ChatArea
+            chatContainerRef={chatContainerRef}
+          />
+          {/* MsgInput */}
+          <MsgInput
+            messageInputRef={messageInputRef}
+            chatContainerRef={chatContainerRef}
+            showScrollButton={showScrollButton}
+            setShowScrollButton={setShowScrollButton}
+          />
+        </Main>
+      </Box>
+    </>
 
-        {/* MsgInput */}
-
-      </Main>
-    </Box>
-  </>
-  
   );
 }

@@ -33,7 +33,7 @@ import {
 } from '../../scripts/app';
 import ConversationsArea from './navbar/ConversationsArea';
 
-const SideBarForDrawer = ({ handleConBar, setShowScrollButton, handleDrawerClose }) => {
+const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
     const [user, setUser] = useState(null);
     const [clicked, setClicked] = useState(false);
     const navigate = useNavigate();
@@ -97,8 +97,6 @@ const SideBarForDrawer = ({ handleConBar, setShowScrollButton, handleDrawerClose
             setShowScrollButton(false);
             // Finally, navigate to the selected conversation route
             navigate(`/talker/c/${convoId}`);
-            // Close the sidebar only if the conversation is different
-            handleConBar();
         }
     };
 
@@ -132,7 +130,6 @@ const SideBarForDrawer = ({ handleConBar, setShowScrollButton, handleDrawerClose
             dispatch(clearMessages()); // Clear previous messages
             setShowScrollButton(false);
             navigate('/talker');
-            handleConBar();
         }
     };
 
@@ -166,7 +163,6 @@ const SideBarForDrawer = ({ handleConBar, setShowScrollButton, handleDrawerClose
 
     const handleConfirmDelete = () => {
         setDeleteDialogOpen(false);
-        handleConBar();
         dispatch(setActiveIndex(null));
         dispatch(clearMessages());
         dispatch(delConversation({ activeConversationId }));
@@ -239,7 +235,7 @@ const SideBarForDrawer = ({ handleConBar, setShowScrollButton, handleDrawerClose
                 <List sx={{
                     flexGrow: 1, overflowY: 'auto', pt: '5px',
                     '&::-webkit-scrollbar': {
-                        width: '8px', // Adjust width of the scrollbar
+                        width: '6px', // Adjust width of the scrollbar
                     },
                     '&::-webkit-scrollbar-track': {
                         background: '#171717', // Ensure track background matches container
