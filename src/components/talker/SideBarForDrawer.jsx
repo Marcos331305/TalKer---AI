@@ -119,6 +119,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
             await signOut(auth);
             dispatch(setAuthState()); // set the userAuthenticated state to false first that have using in authSlice
             dispatch(clearActiveConversationId());
+            dispatch(clearMessages());
             navigate('/'); // Redirect the user to Home-Page(loginPage)
         }, 1000); // Duration of the logOut process
     };
@@ -284,7 +285,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
                                     }}>
                                         <img src="/talkerLogo.svg" alt="App Logo" style={{ width: '16px', height: '16px' }} />
                                     </Box>
-                                    <Typography sx={{ color: '#ECECEC', fontSize: '15px', fontWeight: 420 }}>TalKer</Typography>
+                                    <Typography sx={{ color: '#ECECEC', fontSize: '15px', fontWeight: 500 }}>TalKer</Typography>
                                 </Box>
                             }
                         />

@@ -510,7 +510,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
                 </Typography>
               </>
             ) : (
-              <Typography sx={{ color: "white", fontSize: "16px", textAlign: 'center', color: '#F93A37' }}>
+              <Typography sx={{ color: "white", fontSize: "16px", textAlign: 'center' }}>
                 Sorry, webSpeech is not supported in your browser!
               </Typography>
             )
