@@ -6,15 +6,21 @@ const UserMessageContainer = ({ message }) => {
         <Box
             sx={{
                 backgroundColor: '#2F2F2F',
-                borderRadius: '1.5rem', // Rounded corners
-                padding: '10px 20px', // Padding inside the box
-                color: 'white', // Text color for better contrast
-                maxWidth: '70%', // Limit the width of the message
-                width: 'fit-content', // Only takes as much width as required
-                alignSelf: 'flex-end', // Aligns the box to the right side
-                wordWrap: 'break-word', // Ensures long words break correctly
+                borderRadius: '1.5rem',
+                padding: '10px 20px',
+                color: 'white',
+                maxWidth: '70%',
+                width: 'fit-content',
+                alignSelf: 'flex-end',
+                wordWrap: 'break-word',
                 marginBlock: '18px',
-                marginInline: '12px'
+                marginInline: '12px',
+                '@media (min-width: 768px)': {
+                    marginInline: '20px',
+                },
+                '@media (min-width: 1024px)': {
+                    marginRight: '35px'
+                },
             }}
         >
             <Typography sx={{
