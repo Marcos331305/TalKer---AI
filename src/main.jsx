@@ -9,7 +9,7 @@ import { Provider } from 'react-redux'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { HelmetProvider } from 'react-helmet-async';
-import theme from './scripts/app.js'
+import theme from './scripts/muiTheme.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

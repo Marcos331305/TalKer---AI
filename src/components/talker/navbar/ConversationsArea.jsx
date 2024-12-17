@@ -38,6 +38,15 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                         alignItems: 'center',
                                         py: activeConversationId === convo.conversation_id ? '0px' : '8px',
                                         px: '12px',
+                                        '&:hover': {
+                                            backgroundColor: 'transparent',
+                                        },
+                                        '&:active': {
+                                            backgroundColor: 'transparent',
+                                        },
+                                        '&:focus': {
+                                            backgroundColor: 'transparent',
+                                        },
                                     }}
                                 >
                                     <Box
