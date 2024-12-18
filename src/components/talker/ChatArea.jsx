@@ -11,6 +11,7 @@ import { Helmet } from 'react-helmet-async'
 const ChatArea = ({ chatContainerRef }) => {
     const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
     const { conversationId: conversationIdAsString } = useParams();
+    const [isScrollable, setIsScrollable] = useState(false);
     const conversationId = conversationIdAsString ? Number(conversationIdAsString) : null;
     const dispatch = useDispatch();
     const messages = useSelector((state) => state.messages.messages);
@@ -55,12 +56,34 @@ const ChatArea = ({ chatContainerRef }) => {
         }
     }, [isTypingEffectFinished]);
 
+    // Detect if the content is scrollable
+    useEffect(() => {
+        const handleScrollCheck = () => {
+            if (chatContainerRef.current) {
+                const hasOverflow = chatContainerRef.current.scrollHeight > chatContainerRef.current.clientHeight;
+                setIsScrollable(hasOverflow);
+            }
+        };
+
+        // Initial scroll check
+        handleScrollCheck();
+
+        // Add window resize listener to recheck if scrolling is required on window size changes
+        window.addEventListener('resize', handleScrollCheck);
+
+        // Cleanup event listener on unmount
+        return () => {
+            window.removeEventListener('resize', handleScrollCheck);
+        };
+    }, [messages, chatContainerRef]);
+
     return (
         <Box ref={chatContainerRef}
             sx={{
                 flexGrow: 1,
-                overflowY: 'auto', // Enable vertical scrolling
+                overflowY: isScrollable ? 'auto' : 'hidden', // Enable vertical scrolling
                 borderRadius: '8px', // Optional: rounded corners
+                scrollbarWidth: isScrollable ? 'thin' : 'none',
                 position: 'relative',
                 marginLeft: 'auto',
                 marginRight: 'auto',
@@ -69,24 +92,26 @@ const ChatArea = ({ chatContainerRef }) => {
                     sm: '100%',    // Full width for small screens
                     md: '768px',   // Max width of 768px for medium and larger screens
                 },
-                width: '100% !important',  // Ensures the Box is 100% width within the maxWidth constraint
+                width: '100% !important',
+
+                // scrollBar styles
                 '&::-webkit-scrollbar': {
-                    width: '6px', // Adjust width of the scrollbar
+                    width: isScrollable ? '6px' : '0px', // Consistent 6px width, hidden when not scrollable
                 },
                 '&::-webkit-scrollbar-track': {
-                    background: '#212121', // Ensure track background matches container
+                    background: '#212121', // Consistent dark background color for track
                     borderRadius: '10px',
                 },
                 '&::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#424242', // Scroll thumb color
+                    backgroundColor: '#424242', // Consistent thumb color
                     borderRadius: '10px',
                     '&:hover': {
-                        backgroundColor: '#676767', // Hover effect
+                        backgroundColor: '#676767', // Highlight effect on hover
                     },
                 },
-                '&:hover::-webkit-scrollbar-thumb': {
-                    backgroundColor: '#676767', // Scroll thumb color on hover
-                },
+
+                // Firefox-specific scrollbar styling (unify with WebKit):
+                scrollbarColor: isScrollable ? '#424242 #212121' : 'transparent', // Thumb and track colors
             }}
         >
             {/* React Helmet for Dynamic Title */}
@@ -108,18 +133,10 @@ const ChatArea = ({ chatContainerRef }) => {
                         mb: 2,
                         fontSize: '30px',
                         fontWeight: 600,
-                        color: 'white'
+                        color: '#ECECEC',
+                        paddingInline: '6px',
                     }} component={'span'}>
-                        <Typewriter
-                            options={{
-                                strings: ['What can I help with?'],  // The text to type
-                                autoStart: true,  // Automatically start the typewriter effect
-                                loop: true,  // Continuously loop the typewriting and deleting effect
-                                delay: 100,  // Speed of typing
-                                deleteSpeed: 140,  // Speed of deleting
-                                cursorColor: 'white',  // Cursor color
-                            }}
-                        />
+                       What can I help with?
                     </Typography>
                 </Box>
             ) : (

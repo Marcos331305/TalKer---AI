@@ -27,13 +27,13 @@ import ShareDialog from './navbar/ShareDialog';
 import DeleteDialog from './navbar/DeleteDialog';
 import RenameDialog from './navbar/RenameDialog';
 import { toast } from 'react-toastify';
-import {
-    groupConversationsByTime
-
-} from '../../scripts/app';
+import { groupConversationsByTime } from '../../scripts/app';
 import ConversationsArea from './navbar/ConversationsArea';
+import CircularProgress from '@mui/material/CircularProgress';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 
 const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
+    const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [clicked, setClicked] = useState(false);
     const navigate = useNavigate();
@@ -78,6 +78,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
                 // User is signed out
                 setUser(null);
             }
+            setLoading(false);
         });
 
         return () => unsubscribe(); // Clean up subscription on unmount
@@ -373,13 +374,68 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
                 />
 
                 {/* userAccount section */}
-                <Box onClick={handleClick} sx={{ display: 'flex', alignItems: 'center', py: '8px', px: '14px', marginTop: 'auto', backgroundColor: open ? '#212121' : 'transparent', }}>
-                    <Avatar alt="User Avatar" src={(user) && user.photoURL} />
-                    <Box sx={{ marginLeft: 1, width: '100%', overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
+                {/*<Box
+                    onClick={handleClick}
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        py: '8px',
+                        px: '14px',
+                        marginTop: 'auto',
+                        backgroundColor: open ? '#212121' : 'transparent',
+                    }}
+                >
+                    <Box
+                        sx={{
+                            position: 'relative',
+                            width: 40,
+                            height: 40,
+                        }}
+                    >
+                        {loading ? (
+                            <CircularProgress
+                                size={40} // Matches the Avatar size
+                                sx={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                }}
+                            />
+                        ) : (
+                            <Avatar
+                                alt="User Avatar"
+                                src={user?.photoURL}
+                                sx={{
+                                    width: 40,
+                                    height: 40,
+                                }}
+                                onError={(e) => {
+                                    e.target.onerror = null; // Prevent infinite fallback loop
+                                    e.target.src = ''; // Clear broken image URL to force fallback
+                                }}
+                            >
+                                <AccountCircle
+                                    sx={{
+                                        fontSize: 40, // Match the Avatar size
+                                        color: '#757575', // Default grey color for the icon
+                                    }}
+                                />
+                            </Avatar>
+                        )}
+                    </Box>
+                    <Box
+                        sx={{
+                            marginLeft: 1,
+                            width: '100%',
+                            overflow: 'hidden',
+                            display: 'flex',
+                            alignItems: 'center',
+                        }}
+                    >
                         <Typography
                             fontSize={'14px'}
                             variant="body1"
-                            color='white'
+                            color="white"
                             sx={{
                                 display: 'inline-block',
                                 textOverflow: 'ellipsis',
@@ -391,7 +447,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
                             {user && user.displayName}
                         </Typography>
                     </Box>
-                </Box>
+                </Box>*/}
 
                 {/* menuOfUserAccount */}
                 <Popover
