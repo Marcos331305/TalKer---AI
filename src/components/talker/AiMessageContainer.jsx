@@ -36,15 +36,40 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
   const [visibleText, setVisibleText] = useState('');
   const [typingIndex, setTypingIndex] = useState(0);
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
+  const [isAtBottom, setIsAtBottom] = useState(false);
 
   const scrollToBottom = () => {
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTo({
-        top: chatContainerRef.current.scrollHeight,
-        behavior: 'smooth',
-      });
+      // Only scroll to bottom if user is at the bottom
+      if (isAtBottom) {
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
+          behavior: 'smooth',
+        });
+      }
     }
   };
+
+  // Detect scroll position
+  const handleScroll = () => {
+    if (chatContainerRef.current) {
+      const isAtBottom = chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop === chatContainerRef.current.clientHeight;
+      setIsAtBottom(isAtBottom); // Update state if user is at the bottom
+    }
+  };
+
+  useEffect(() => {
+    // Attach scroll event listener
+    if (chatContainerRef.current) {
+      chatContainerRef.current.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (chatContainerRef.current) {
+        chatContainerRef.current.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [chatContainerRef]);
 
   // Immediate rendering for non-new messages
   useEffect(() => {
@@ -53,7 +78,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
     }
   }, [isNewMessage, content]);
 
-  // typeWriter effect only for newelyGenerated responses
+  // Typewriter effect only for newly generated responses
   useEffect(() => {
     if (!isNewMessage || currentContentIndex >= content.length) {
       setIsTypingEffectFinished(true); // Typing complete
@@ -75,7 +100,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
         // Current item fully typed, move to the next item
         clearInterval(typingInterval);
         setTypingIndex(0); // Reset typing index
-        setVisibleText(""); // Reset visible text for next item
+        setVisibleText(''); // Reset visible text for next item
         setCurrentContentIndex((prev) => prev + 1); // Move to the next content item
       }
     };
