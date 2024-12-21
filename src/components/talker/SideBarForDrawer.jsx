@@ -29,10 +29,8 @@ import RenameDialog from './navbar/RenameDialog';
 import { toast } from 'react-toastify';
 import { groupConversationsByTime } from '../../scripts/app';
 import ConversationsArea from './navbar/ConversationsArea';
-import CircularProgress from '@mui/material/CircularProgress';
-import AccountCircle from '@mui/icons-material/AccountCircle';
 
-const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
+const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigating }) => {
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState(null);
     const [clicked, setClicked] = useState(false);
@@ -90,6 +88,9 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
     const handleItemClick = (index, convoId) => {
         // Check if the clicked conversation is already the active one
         if (convoId !== activeConversationId) {
+            setIsNavigating(true);
+            // Wait for the chat area to be re-rendered or initialized, then reset isNavigating to false
+            setTimeout(() => setIsNavigating(false), 100); // Adjust timeout as needed
             // First, set the active conversation ID and activeEffect based on that Id
             dispatch(setActiveConversationId(convoId));
             // Then, fetch the messages for the selected conversation
@@ -252,7 +253,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose }) => {
                     },
                     '&:hover::-webkit-scrollbar-thumb': {
                         backgroundColor: '#676767', // Scroll thumb color on hover
-                      },
+                    },
                 }}>
                     {/* App Logo Bar */}
                     <ListItem

@@ -13,8 +13,9 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 
-const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton }) => {
+const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating, setIsNavigating }) => {
   const [isRecording, setIsRecording] = useState(false);
+  const [isAtBottom, setIsAtBottom] = useState(true);
   const recognitionRef = useRef(null); // Store recognition instance in ref
   const [accumulatedTranscript, setAccumulatedTranscript] = useState(""); // For storing the ongoing transcript
   const [speechApiSupported, setSpeechApiSupported] = useState(false);
@@ -39,10 +40,10 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   useEffect(() => {
     // Fetch conversations when the component mounts
     dispatch(fetchConversations(user.uid));
-  
+
     // Check if this is the first app load
     const isFirstLoad = sessionStorage.getItem('isFirstLoad') === null;
-  
+
     if (isFirstLoad) {
       // Prevent auto-selection of activeConversationId on first load
       sessionStorage.setItem('isFirstLoad', 'false');
@@ -50,7 +51,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     } else {
       // Retrieve stored active conversation from localStorage for subsequent loads
       const storedData = localStorage.getItem('activeConversationId');
-  
+
       if (storedData) {
         try {
           const activeConversationId = JSON.parse(storedData);
@@ -60,7 +61,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         }
       }
     }
-  }, []);  
+  }, []);
 
   // handle Msg sending btn
   const handleSend = async () => {
@@ -153,7 +154,14 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 30);
+        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
+
+        // Check if the user is at the bottom
+        if (scrollHeight - scrollTop === clientHeight) {
+          setIsAtBottom(true);
+        } else {
+          setIsAtBottom(false);
+        }
       }
     };
 
@@ -161,15 +169,16 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       chatContainer.addEventListener('scroll', handleScroll);
     }
 
-    // Only scroll to bottom when user is already at the bottom of the chat
-    const isAtBottom = chatContainer?.scrollHeight - chatContainer?.scrollTop === chatContainer?.clientHeight;
-
-    if (messages.length > 0 && isAtBottom) {
-      scrollToBottom(); // Scroll to bottom only if user is at the bottom
+    // Scroll to top when navigating to a new conversation
+    if (isNavigating) {
+      if (chatContainer) {
+        chatContainer.scrollTop = 0; // Scroll to the top when navigating
+      }
     }
 
-    if (!loading && isAtBottom) {
-      scrollToBottom(); // Scroll to bottom when loading finishes, only if user is at the bottom
+    // Only scroll to bottom when a new message is added if the user is at the bottom
+    if (messages.length > 0 && isAtBottom && !isNavigating) {
+      scrollToBottom(); // Scroll to bottom if user is at the bottom
     }
 
     // Dynamically adjust button position based on input height
@@ -185,17 +194,16 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       resizeObserver.observe(messageInputRef.current); // Observe input height changes
     }
 
-    // Cleanup functions for both scroll event listener and resize observer
+    // Cleanup functions for scroll event listener
     return () => {
       if (chatContainer) {
         chatContainer.removeEventListener('scroll', handleScroll);
       }
-
       if (messageInputRef.current) {
         resizeObserver.unobserve(messageInputRef.current); // Clean up observer
       }
     };
-  }, [messages, loading]); // Dependencies: Runs on message change or loading state change
+  }, [messages, isNavigating, isAtBottom]);
 
   // Handling voiceInput functionality
   const toggleRecording = () => {

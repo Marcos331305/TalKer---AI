@@ -81,7 +81,7 @@ const DrawerHeader = styled('div')(({theme}) => ({
     justifyContent: 'flex-end',
 }));
 
-export default function UiWithDrawer({showScrollButton, setShowScrollButton, messageInputRef, chatContainerRef}) {
+export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollButton, setShowScrollButton, messageInputRef, chatContainerRef}) {
     const theme = useTheme();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -271,6 +271,7 @@ export default function UiWithDrawer({showScrollButton, setShowScrollButton, mes
                     <SideBarForDrawer
                         handleDrawerClose={handleDrawerClose}
                         setShowScrollButton={setShowScrollButton}
+                        setIsNavigating={setIsNavigating}
                     />
                 </Drawer>
                 <Main sx={{
@@ -291,6 +292,8 @@ export default function UiWithDrawer({showScrollButton, setShowScrollButton, mes
                         chatContainerRef={chatContainerRef}
                         showScrollButton={showScrollButton}
                         setShowScrollButton={setShowScrollButton}
+                        isNavigating={isNavigating}
+                        setIsNavigating={setIsNavigating}
                     />
                 </Main>
 

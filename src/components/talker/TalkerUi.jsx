@@ -11,6 +11,7 @@ const TalkerUi = () => {
   // stateLifting
   const messageInputRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const [isNavigating, setIsNavigating] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
   const theme = useTheme();
@@ -23,7 +24,7 @@ const TalkerUi = () => {
     }}>
       {/* Conditionally render uiWithPersistantDrawer and without it for different screen sizes */}
       {is768pxOrLarger ? (
-        <UiWithDrawer showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} />
+        <UiWithDrawer isNavigating={isNavigating} setIsNavigating={setIsNavigating} showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} messageInputRef={messageInputRef} chatContainerRef={chatContainerRef} />
       ) : (
         <>
           <Nav showScrollButton={showScrollButton} setShowScrollButton={setShowScrollButton} />
