@@ -149,6 +149,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     }
   };
   useEffect(() => {
+    setShowScrollButton(false); // Hide the scroll button by default
+
     const chatContainer = chatContainerRef.current;
 
     const handleScroll = () => {
@@ -203,7 +205,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         resizeObserver.unobserve(messageInputRef.current); // Clean up observer
       }
     };
-  }, [messages, isNavigating, isAtBottom]);
+  }, [messages, isNavigating, activeConversationId, isAtBottom]);
 
   // Handling voiceInput functionality
   const toggleRecording = () => {
