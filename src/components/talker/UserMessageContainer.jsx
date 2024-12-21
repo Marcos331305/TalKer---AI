@@ -25,7 +25,8 @@ const UserMessageContainer = ({ message }) => {
         >
             <Typography sx={{
                 whiteSpace: 'pre-wrap',
-                wordBreak: 'break-word'
+                wordBreak: 'break-word',
+                color: '#ECECEC',
             }} variant="body1">{message}</Typography>
         </Box>
     );

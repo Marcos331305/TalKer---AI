@@ -37,7 +37,7 @@ const CodeBox = ({ language, code }) => {
       >
         <Typography
           sx={{
-            color: '#FFFFFF',
+            color: '#B4B4B4',
             fontSize: '14px',
             fontWeight: 600,
             textTransform: 'uppercase',
@@ -58,7 +58,7 @@ const CodeBox = ({ language, code }) => {
               fontSize: '12px',
               padding: '4px 8px',
               backgroundColor: '#424242',
-              color: '#FFFFFF',
+              color: '#B4B4B4',
               '&:hover': {
                 backgroundColor: '#525252',
               },
@@ -76,7 +76,7 @@ const CodeBox = ({ language, code }) => {
               <>
                 <FileCopyIcon
                   fontSize="small"
-                  sx={{ marginRight: '4px', color: '#FFFFFF' }}
+                  sx={{ marginRight: '4px', color: 'B4B4B4' }}
                 />
                 Copy Code
               </>
