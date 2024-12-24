@@ -306,34 +306,38 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                         sx={{
                             '& .MuiPaper-root': {
                                 borderRadius: '16px',
+                                border: '1.2px solid #5D5D5D'
                             },
                         }}
                     >
                         <List sx={{ width: 125, bgcolor: '#2F2F2F' }}>
                             <ListItem onClick={handleOpenShareDialog}>
-                                <Share fontSize='small' sx={{ color: 'white', marginRight: 1 }} />
+                                <Share fontSize='small' sx={{ color: 'white', marginRight: '10px' }} />
                                 <ListItemText primary="Share" sx={{
                                     color: 'white',
                                     '& .MuiTypography-root': {
                                         fontSize: '14px',
+                                        fontWeight: '500'
                                     },
                                 }} />
                             </ListItem>
                             <ListItem onClick={handleRenameOpen}>
-                                <Edit fontSize='small' sx={{ color: 'white', marginRight: 1 }} />
+                                <Edit fontSize='small' sx={{ color: 'white', marginRight: '10px' }} />
                                 <ListItemText primary="Rename" sx={{
                                     color: 'white',
                                     '& .MuiTypography-root': {
                                         fontSize: '14px',
+                                        fontWeight: '500'
                                     },
                                 }} />
                             </ListItem>
                             <ListItem onClick={handleOpenDeleteDialog}>
-                                <Delete fontSize='small' sx={{ color: '#F93A37', marginRight: 1 }} />
+                                <Delete fontSize='small' sx={{ color: '#F93A37', marginRight: '10px' }} />
                                 <ListItemText primary="Delete" sx={{
                                     color: '#F93A37',
                                     '& .MuiTypography-root': {
                                         fontSize: '14px',
+                                        fontWeight: '500'
                                     },
                                 }} />
                             </ListItem>

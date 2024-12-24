@@ -39,7 +39,7 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                         py: activeConversationId === convo.conversation_id ? '0px' : '8px',
                                         px: '12px',
                                         '&:hover': {
-                                            backgroundColor: 'transparent',
+                                            backgroundColor: activeConversationId === convo.conversation_id ? 'transparent' : '#1E1E1E',
                                         },
                                         '&:active': {
                                             backgroundColor: 'transparent',
