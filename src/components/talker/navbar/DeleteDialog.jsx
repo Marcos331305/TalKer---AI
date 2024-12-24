@@ -27,7 +27,7 @@ const DeleteDialog = ({ open, onClose, onConfirm }) => {
             }}
             BackdropProps={{
                 sx: {
-                    bgcolor: '#010101',
+                    bgcolor: 'rgba(5, 5, 5, 0.7)',
                 },
             }}
         >

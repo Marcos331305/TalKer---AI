@@ -515,7 +515,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             {/* FeedBack */}
                             <ListItem button>
                                 <FeedbackIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>FeedBack</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Feedback</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
                             </ListItem>
                             <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 

@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {styled, useTheme} from '@mui/material/styles';
+import React, { useEffect, useState } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -13,21 +13,29 @@ import ChatArea from './ChatArea';
 import MsgInput from './MsgInput';
 import SideBarForDrawer from './SideBarForDrawer';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
-import {clearActiveConversationId, fetchConversations, setActiveIndex} from "../../features/conversationsSlice.js";
-import {clearMessages} from "../../features/messageSlice.js";
-import {useDispatch, useSelector} from "react-redux";
-import {useNavigate} from "react-router-dom";
+import { clearActiveConversationId, fetchConversations, setActiveIndex } from "../../features/conversationsSlice.js";
+import { clearMessages } from "../../features/messageSlice.js";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import CircularProgress from '@mui/material/CircularProgress';
-import {getAuth, onAuthStateChanged, signOut} from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import AccountCircle from "@mui/icons-material/AccountCircle";
-import {Divider, List, ListItem, ListItemText, Popover} from "@mui/material";
+import { Divider, List, ListItem, ListItemText, Popover } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
-import {setAuthState} from "../../features/authSlice.js";
+import { setAuthState } from "../../features/authSlice.js";
+import PersonIcon from '@mui/icons-material/Person';
+import MemoryIcon from '@mui/icons-material/Memory';
+import SecurityIcon from '@mui/icons-material/Security';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import Button from '@mui/material/Button';
+import ShareIcon from '@mui/icons-material/Share';
+import ShareDialog from './navbar/ShareDialog.jsx';
 
 const drawerWidth = 260;
 
-const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})(
-    ({theme}) => ({
+const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
+    ({ theme }) => ({
         flexGrow: 1,
         padding: theme.spacing(3),
         transition: theme.transitions.create('margin', {
@@ -37,7 +45,7 @@ const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})(
         marginLeft: `-${drawerWidth}px`,
         variants: [
             {
-                props: ({open}) => open,
+                props: ({ open }) => open,
                 style: {
                     transition: theme.transitions.create('margin', {
                         easing: theme.transitions.easing.easeOut,
@@ -52,14 +60,14 @@ const Main = styled('main', {shouldForwardProp: (prop) => prop !== 'open'})(
 
 const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== 'open',
-})(({theme}) => ({
+})(({ theme }) => ({
     transition: theme.transitions.create(['margin', 'width'], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen,
     }),
     variants: [
         {
-            props: ({open}) => open,
+            props: ({ open }) => open,
             style: {
                 width: `calc(100% - ${drawerWidth}px)`,
                 marginLeft: `${drawerWidth}px`,
@@ -72,7 +80,7 @@ const AppBar = styled(MuiAppBar, {
     ],
 }));
 
-const DrawerHeader = styled('div')(({theme}) => ({
+const DrawerHeader = styled('div')(({ theme }) => ({
     display: 'flex',
     alignItems: 'center',
     padding: theme.spacing(0, 1),
@@ -81,7 +89,7 @@ const DrawerHeader = styled('div')(({theme}) => ({
     justifyContent: 'flex-end',
 }));
 
-export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollButton, setShowScrollButton, messageInputRef, chatContainerRef}) {
+export default function UiWithDrawer({ isNavigating, setIsNavigating, showScrollButton, setShowScrollButton, messageInputRef, chatContainerRef }) {
     const theme = useTheme();
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -90,6 +98,7 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
     const [open, setOpen] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [clicked, setClicked] = useState(false);
+    const [shareDialogOpen, setShareDialogOpen] = useState(false); // for shareOption
     const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
 
     // useEffect for getting the userDetails when the component Mount's
@@ -147,11 +156,18 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
             navigate('/'); // Redirect the user to Home-Page(loginPage)
         }, 1000); // Duration of the logOut process
     };
+    const handleOpenShareDialog = () => {
+        setShareDialogOpen(true);
+    };
+
+    const handleCloseShareDialog = () => {
+        setShareDialogOpen(false);
+    };
 
     return (
         <>
-            <Box sx={{display: 'flex', height: '100vh', width: '100% !important'}}>
-                <CssBaseline/>
+            <Box sx={{ display: 'flex', height: '100vh', width: '100% !important' }}>
+                <CssBaseline />
                 <AppBar open={open} sx={{
                     bgcolor: '#212121',
                     boxShadow: 'none',
@@ -161,17 +177,17 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
                 }}>
                     <Toolbar>
                         {/* Left Side: Plus Icon + TalKerAI */}
-                        <Box sx={{display: 'flex', alignItems: 'center'}}>
+                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
                             <IconButton
                                 color="inherit"
                                 aria-label="open drawer"
                                 onClick={handleDrawerOpen}
                                 edge="start"
                                 sx={[
-                                    open && {display: 'none'},
+                                    open && { display: 'none' },
                                 ]}
                             >
-                                <MenuIcon color="primary"/>
+                                <MenuIcon color="primary" />
                             </IconButton>
                             {!open && (
                                 <IconButton onClick={handleNewConversation}>
@@ -194,8 +210,34 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
                             </Typography>
                         </Box>
 
-                        {/* Right Side: User Avatar */}
-                        <Box sx={{marginLeft: 'auto'}}>
+                        {/* Right Side: shareBtn & userAvatar */}
+                        <Box sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
+                            {/* shareBtn */}
+                            <Box>
+                                <Button onClick={handleOpenShareDialog}
+                                    variant="outlined"
+                                    sx={{
+                                        px: '14px',
+                                        py: '8px',
+                                        fontSize: '14px',
+                                        textTransform: 'none', // To avoid uppercase text
+                                        borderRadius: '50px', // Fully rounded border
+                                        border: '1px solid #424242',
+                                        color: '#FFFFFF', // Default text color
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '6px', // Gap between icon and text
+                                        '&:hover': {
+                                            backgroundColor: '#2F2F2F', // Hover background color
+                                            borderColor: '#424242', // Optional: Maintain border color on hover
+                                        },
+                                    }}
+                                >
+                                    <ShareIcon sx={{ fontSize: '16px' }} />
+                                    Share
+                                </Button>
+                            </Box>
+                            {/* userAvatar */}
                             <Box
                                 onClick={handleClick}
                                 sx={{
@@ -253,6 +295,8 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
                         </Box>
                     </Toolbar>
                 </AppBar>
+                {/* shareDialog */}
+                <ShareDialog open={shareDialogOpen} handleClose={handleCloseShareDialog} />
                 <Drawer
                     sx={{
                         width: drawerWidth,
@@ -313,29 +357,111 @@ export default function UiWithDrawer({isNavigating, setIsNavigating,showScrollBu
                     PaperProps={{
                         sx: {
                             mt: '5px', // Add spacing between Popover and Avatar
-                            pointerEvents: 'none', // Prevent the Popover from blocking pointer events
+                        },
+                    }}
+                    sx={{
+                        '& .MuiPaper-root': {
+                            borderRadius: '14px',
+                            border: '1px solid #5D5D5D',
                         },
                     }}
                 >
-                    <List sx={{ width: 240, bgcolor: '#2F2F2F', border: '1px solid #444343' }}>
+                    <List sx={{ width: 240, bgcolor: '#2F2F2F', padding: '8px', boxSizing: 'border-box' }}>
                         {/* Email at the top */}
-                        <ListItem>
-                            <Typography variant="body2" sx={{ color: 'white', py: '8px', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
+                        <ListItem sx={{
+                            py: '12px',
+                        }}>
+                            <Typography variant="body2" sx={{ color: '#E3E3E3', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
                         </ListItem>
+                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 
-                        <Divider sx={{ bgcolor: '#444343' }} />
+                        {/* Mid Part */}
+                        {/* Your Data */}
+                        <ListItem button sx={{
+                            px: '16px',
+                            pt: '8px',
+                            pb: '4px',
+                            mt: '3px',
+                            cursor: 'pointer',
+                            borderRadius: '9px',
+                            ":hover": {
+                                bgcolor: '#424242',
+                            }
+                        }}>
+                            <PersonIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Your Data</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                        </ListItem>
+                        {/* Memory */}
+                        <ListItem button sx={{
+                            px: '16px',
+                            pt: '4px',
+                            pb: '4px',
+                            cursor: 'pointer',
+                            borderRadius: '9px',
+                            ":hover": {
+                                bgcolor: '#424242'
+                            }
+                        }}>
+                            <MemoryIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Memory</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                        </ListItem>
+                        {/* Security */}
+                        <ListItem button sx={{
+                            px: '16px',
+                            pt: '4px',
+                            pb: '4px',
+                            cursor: 'pointer',
+                            borderRadius: '9px',
+                            ":hover": {
+                                bgcolor: '#424242'
+                            }
+                        }}>
+                            <SecurityIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Security</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                        </ListItem>
+                        {/* Settings */}
+                        <ListItem button sx={{
+                            pt: '4px',
+                            pb: '8px',
+                            cursor: 'pointer',
+                            borderRadius: '9px',
+                            mb: '3px',
+                            ":hover": {
+                                bgcolor: '#424242',
+                            }
+                        }}>
+                            <SettingsIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Settings</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                        </ListItem>
+                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
+                        {/* FeedBack */}
+                        <ListItem button sx={{
+                            cursor: 'pointer',
+                            borderRadius: '9px',
+                            ":hover": {
+                                bgcolor: '#424242'
+                            },
+                            my: '3px'
+                        }}>
+                            <FeedbackIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>FeedBack</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                        </ListItem>
+                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 
                         {/* Logout option */}
                         <ListItem sx={{
                             transform: clicked ? 'scale(0.95)' : 'scale(1)',
                             transition: 'transform 0.1s ease',
+                            mt: '3px',
                             '&:hover': {
-                                backgroundColor: '#444',
+                                backgroundColor: '#424242',
                             },
+                            cursor: 'pointer',
+                            borderRadius: '9px'
                         }}
-                                  button onClick={handleLogOut}>
-                            <LogoutIcon sx={{ color: 'white', marginRight: 1 }} />
-                            <ListItemText primary={clicked ? "Logging out..." : "Logout"} sx={{ color: 'white' }} />
+                            button onClick={handleLogOut}>
+                            <LogoutIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>{clicked ? "Logging out..." : "Logout"}</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
                         </ListItem>
                     </List>
                 </Popover>

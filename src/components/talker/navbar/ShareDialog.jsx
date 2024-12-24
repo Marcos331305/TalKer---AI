@@ -67,7 +67,7 @@ const ShareDialog = ({ open, handleClose }) => {
                 },
             }}
             BackdropProps={{
-                sx: { bgcolor: '#050505' },
+                sx: { bgcolor: 'rgba(5, 5, 5, 0.7)' },
             }}
         >
             {/* Dialog Header */}
