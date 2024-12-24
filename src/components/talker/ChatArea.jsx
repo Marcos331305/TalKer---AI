@@ -11,7 +11,6 @@ import { Helmet } from 'react-helmet-async'
 const ChatArea = ({ chatContainerRef }) => {
     const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
     const { conversationId: conversationIdAsString } = useParams();
-    const [isScrollable, setIsScrollable] = useState(false);
     const conversationId = conversationIdAsString ? Number(conversationIdAsString) : null;
     const dispatch = useDispatch();
     const messages = useSelector((state) => state.messages.messages);
@@ -56,34 +55,12 @@ const ChatArea = ({ chatContainerRef }) => {
         }
     }, [isTypingEffectFinished]);
 
-    // Detect if the content is scrollable
-    useEffect(() => {
-        const handleScrollCheck = () => {
-            if (chatContainerRef.current) {
-                const hasOverflow = chatContainerRef.current.scrollHeight > chatContainerRef.current.clientHeight;
-                setIsScrollable(hasOverflow);
-            }
-        };
-
-        // Initial scroll check
-        handleScrollCheck();
-
-        // Add window resize listener to recheck if scrolling is required on window size changes
-        window.addEventListener('resize', handleScrollCheck);
-
-        // Cleanup event listener on unmount
-        return () => {
-            window.removeEventListener('resize', handleScrollCheck);
-        };
-    }, [messages, chatContainerRef]);
-
     return (
         <Box ref={chatContainerRef}
             sx={{
                 flexGrow: 1,
-                overflowY: isScrollable ? 'auto' : 'hidden', // Enable vertical scrolling
+                overflowY: 'auto',
                 borderRadius: '8px', // Optional: rounded corners
-                scrollbarWidth: isScrollable ? 'thin' : 'none',
                 position: 'relative',
                 marginLeft: 'auto',
                 marginRight: 'auto',
@@ -96,7 +73,7 @@ const ChatArea = ({ chatContainerRef }) => {
 
                 // scrollBar styles
                 '&::-webkit-scrollbar': {
-                    width: isScrollable ? '6px' : '0px', // Consistent 6px width, hidden when not scrollable
+                    width: '6px'
                 },
                 '&::-webkit-scrollbar-track': {
                     background: '#212121', // Consistent dark background color for track
@@ -109,9 +86,6 @@ const ChatArea = ({ chatContainerRef }) => {
                         backgroundColor: '#676767', // Highlight effect on hover
                     },
                 },
-
-                // Firefox-specific scrollbar styling (unify with WebKit):
-                scrollbarColor: isScrollable ? '#424242 #212121' : 'transparent', // Thumb and track colors
             }}
         >
             {/* React Helmet for Dynamic Title */}

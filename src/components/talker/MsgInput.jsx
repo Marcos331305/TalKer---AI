@@ -30,7 +30,6 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
   const conversations = useSelector((state) => state.conversations.conversations);
   const messages = useSelector((state) => state.messages.messages);
-  const loading = useSelector((state) => state.messages.loading);
   // Initialize the Firebase Auth instance
   const auth = getAuth();
   // Get the current user
@@ -156,7 +155,9 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const handleScroll = () => {
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > 50);
+        // Use media query to determine the threshold based on screen width
+        const threshold = window.innerWidth >= 768 ? 150 : 140;
+        setShowScrollButton(scrollHeight - scrollTop - clientHeight > threshold);
 
         // Check if the user is at the bottom
         if (scrollHeight - scrollTop === clientHeight) {
