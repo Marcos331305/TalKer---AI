@@ -35,6 +35,11 @@ import {
 import ConversationsArea from './ConversationsArea';
 import CircularProgress from "@mui/material/CircularProgress";
 import AccountCircle from "@mui/icons-material/AccountCircle";
+import PersonIcon from '@mui/icons-material/Person';
+import MemoryIcon from '@mui/icons-material/Memory';
+import SecurityIcon from '@mui/icons-material/Security';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FeedbackIcon from '@mui/icons-material/Feedback';
 
 const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     const [user, setUser] = useState(null);
@@ -230,7 +235,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     return (
         <>
             <Drawer anchor="left" open={isOpen} onClose={handleConBar}>
-                <Box sx={{ width: 257, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#171717', overflow: 'hidden' }}>
+                <Box sx={{ width: 273, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#171717', overflow: 'hidden' }}>
                     <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: '10px' }}>
                         <IconButton onClick={handleConBar}>
                             <MenuOpenIcon color='primary' />
@@ -454,14 +459,65 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             vertical: 'bottom',
                             horizontal: 'left',
                         }}
+                        sx={{
+                            '& .MuiPaper-root': {
+                                borderRadius: '.5rem',
+                                border: '1px solid #5D5D5D',
+                            },
+                        }}
                     >
-                        <List sx={{ width: 240, bgcolor: '#2F2F2F', border: '1px solid #444343' }}>
+                        <List sx={{ width: 240, bgcolor: '#2F2F2F', padding: '6px' }}>
                             {/* Email at the top */}
-                            <ListItem>
-                                <Typography variant="body2" sx={{ color: 'white', py: '8px', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
+                            <ListItem sx={{
+                                py: '12px'
+                            }}>
+                                <Typography variant="body2" sx={{ color: '#E3E3E3',  px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
                             </ListItem>
+                            <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 
-                            <Divider sx={{ bgcolor: '#444343' }} />
+                            {/* Mid Part */}
+                            {/* Your Data */}
+                            <ListItem button sx={{
+                                px: '16px',
+                                pt: '8px',
+                                pb: '4px'
+                            }}>
+                                <PersonIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Your Data</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            </ListItem>
+                            {/* Memory */}
+                            <ListItem button sx={{
+                                px: '16px',
+                                pt: '4px',
+                                pb: '4px'
+                            }}>
+                                <MemoryIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Memory</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            </ListItem>
+                            {/* Security */}
+                            <ListItem button sx={{
+                                 px: '16px',
+                                 pt: '4px',
+                                 pb: '4px'
+                            }}>
+                                <SecurityIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Security</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            </ListItem>
+                            {/* Settings */}
+                            <ListItem button sx={{
+                                pt: '4px',
+                                pb: '8px'
+                            }}>
+                                <SettingsIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Settings</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            </ListItem>
+                            <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
+                            {/* FeedBack */}
+                            <ListItem button>
+                                <FeedbackIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>FeedBack</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            </ListItem>
+                            <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 
                             {/* Logout option */}
                             <ListItem sx={{
@@ -472,8 +528,8 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                                 },
                             }}
                                 button onClick={handleLogOut}>
-                                <LogoutIcon sx={{ color: 'white', marginRight: 1 }} />
-                                <ListItemText primary={clicked ? "Logging out..." : "Logout"} sx={{ color: 'white' }} />
+                                <LogoutIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
+                                <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>{clicked ? "Logging out..." : "Logout"}</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
                             </ListItem>
                         </List>
                     </Popover>
