@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Typography } from '@mui/material';
+import systemTheme from '../../scripts/muiTheme';
 
 const UserMessageContainer = ({ message }) => {
     return (
@@ -26,7 +27,7 @@ const UserMessageContainer = ({ message }) => {
             <Typography sx={{
                 whiteSpace: 'pre-wrap',
                 wordBreak: 'break-word',
-                color: '#ECECEC',
+                color: systemTheme.palette.text.primary,
             }} variant="body1">{message}</Typography>
         </Box>
     );

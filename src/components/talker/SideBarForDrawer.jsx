@@ -29,6 +29,7 @@ import RenameDialog from './navbar/RenameDialog';
 import { toast } from 'react-toastify';
 import { groupConversationsByTime } from '../../scripts/app';
 import ConversationsArea from './navbar/ConversationsArea';
+import systemTheme from '../../scripts/muiTheme';
 
 const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigating }) => {
     const [loading, setLoading] = useState(true);
@@ -225,7 +226,8 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
 
     return (
         <>
-            <Box sx={{ width: 257, display: 'flex', flexDirection: 'column', height: '100%', bgcolor: '#171717', overflow: 'hidden' }}>
+            <Box sx={{ width: 257, display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', bgcolor: systemTheme.palette.customColors.sideBarBgColor
+             }}>
                 <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', px: '8.5px !important' }}>
                     <IconButton onClick={handleDrawerClose}>
                         <MenuOpenIcon color='primary' />
@@ -277,17 +279,19 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
                                 }}>
                                     <Box sx={{
                                         padding: '4px',
-                                        border: '1px solid #424242',
                                         borderRadius: '50%',
                                         display: 'flex',
                                         justifyContent: 'center',
                                         alignItems: 'center',
                                         marginRight: '10px',
                                         flexShrink: 0,
+                                        borderWidth: '1px',
+                                        borderStyle: 'solid',
+                                        borderColor: systemTheme.palette.customColors.borderColor
                                     }}>
                                         <img src="/talkerLogo.svg" alt="App Logo" style={{ width: '16px', height: '16px' }} />
                                     </Box>
-                                    <Typography sx={{ color: '#ECECEC', fontSize: '15px', fontWeight: 500 }}>TalKer</Typography>
+                                    <Typography sx={{ color: systemTheme.palette.text.primary, fontSize: '15px', fontWeight: 500 }}>TalKer</Typography>
                                 </Box>
                             }
                         />
@@ -319,20 +323,22 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
                     sx={{
                         '& .MuiPaper-root': {
                             borderRadius: '16px',
-                            border: '1.2px solid #5D5D5D'
+                            borderWidth: '1.2px',
+                            borderStyle: 'solid',
+                            borderColor: systemTheme.palette.customColors.specialBorderColor
                         },
                     }}
                 >
-                    <List sx={{ width: 125, bgcolor: '#2F2F2F' }}>
+                    <List sx={{ width: 125, bgcolor: systemTheme.palette.secondary.main }}>
                         <ListItem onClick={handleOpenShareDialog} sx={{
                             cursor: 'pointer',
                             ":hover":{
-                                bgcolor: '#444444'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             }
                         }}>
-                            <Share fontSize='small' sx={{ color: 'white', marginRight: '10px' }} />
+                            <Share fontSize='small' sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: '10px' }} />
                             <ListItemText primary="Share" sx={{
-                                color: 'white',
+                                color: systemTheme.palette.customColors.customColor,
                                 '& .MuiTypography-root': {
                                     fontSize: '14px',
                                     fontWeight: '500'
@@ -342,12 +348,12 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
                         <ListItem onClick={handleRenameOpen} sx={{
                             cursor: 'pointer',
                             ":hover":{
-                                bgcolor: '#444444'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             }
                         }}>
-                            <Edit fontSize='small' sx={{ color: 'white', marginRight: '10px' }} />
+                            <Edit fontSize='small' sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: '10px' }} />
                             <ListItemText primary="Rename" sx={{
-                                color: 'white',
+                                color: systemTheme.palette.customColors.customColor,
                                 '& .MuiTypography-root': {
                                     fontSize: '14px',
                                     fontWeight: '500'
@@ -357,12 +363,12 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
                         <ListItem onClick={handleOpenDeleteDialog} sx={{
                             cursor: 'pointer',
                             ":hover":{
-                                bgcolor: '#444444'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             }
                         }}>
-                            <Delete fontSize='small' sx={{ color: '#F93A37', marginRight: '10px' }} />
+                            <Delete fontSize='small' sx={{ color: systemTheme.palette.customColors.delete, marginRight: '10px' }} />
                             <ListItemText primary="Delete" sx={{
-                                color: '#F93A37',
+                                color: systemTheme.palette.customColors.delete,
                                 '& .MuiTypography-root': {
                                     fontSize: '14px',
                                     fontWeight: '500'
@@ -393,81 +399,7 @@ const SideBarForDrawer = ({ setShowScrollButton, handleDrawerClose, setIsNavigat
                     setActiveConversationTitle={setActiveConversationTitle}
                 />
 
-                {/* userAccount section */}
-                {/*<Box
-                    onClick={handleClick}
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        py: '8px',
-                        px: '14px',
-                        marginTop: 'auto',
-                        backgroundColor: open ? '#212121' : 'transparent',
-                    }}
-                >
-                    <Box
-                        sx={{
-                            position: 'relative',
-                            width: 40,
-                            height: 40,
-                        }}
-                    >
-                        {loading ? (
-                            <CircularProgress
-                                size={40} // Matches the Avatar size
-                                sx={{
-                                    position: 'absolute',
-                                    top: 0,
-                                    left: 0,
-                                }}
-                            />
-                        ) : (
-                            <Avatar
-                                alt="User Avatar"
-                                src={user?.photoURL}
-                                sx={{
-                                    width: 40,
-                                    height: 40,
-                                }}
-                                onError={(e) => {
-                                    e.target.onerror = null; // Prevent infinite fallback loop
-                                    e.target.src = ''; // Clear broken image URL to force fallback
-                                }}
-                            >
-                                <AccountCircle
-                                    sx={{
-                                        fontSize: 40, // Match the Avatar size
-                                        color: '#757575', // Default grey color for the icon
-                                    }}
-                                />
-                            </Avatar>
-                        )}
-                    </Box>
-                    <Box
-                        sx={{
-                            marginLeft: 1,
-                            width: '100%',
-                            overflow: 'hidden',
-                            display: 'flex',
-                            alignItems: 'center',
-                        }}
-                    >
-                        <Typography
-                            fontSize={'14px'}
-                            variant="body1"
-                            color="white"
-                            sx={{
-                                display: 'inline-block',
-                                textOverflow: 'ellipsis',
-                                overflow: 'hidden',
-                                whiteSpace: 'nowrap',
-                                maxWidth: '100%',
-                            }}
-                        >
-                            {user && user.displayName}
-                        </Typography>
-                    </Box>
-                </Box>*/}
+             
 
                 {/* menuOfUserAccount */}
                 <Popover

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, ListItem, ListItemText, ListItemIcon, IconButton } from '@mui/material';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import systemTheme from '../../../scripts/muiTheme';
 
 const ConversationsArea = ({ groupedConversations, activeConversationId, handleItemClick, handleClickMore }) => {
     let conversationIndex = 0; // Index to track the position across groups
@@ -20,7 +21,7 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                 return (
                     <Box key={groupKey} sx={{ mb: 3 }}>
                         {/* Render group heading */}
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#ECECEC', mb: 1, fontSize: '12px', ml: '20px', mt: '12px' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 600, color: systemTheme.palette.text.primary, mb: 1, fontSize: '12px', ml: '20px', mt: '12px' }}>
                             {formatGroupKey(groupKey)}
                         </Typography>
 
@@ -39,7 +40,7 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                         py: activeConversationId === convo.conversation_id ? '0px' : '8px',
                                         px: '12px',
                                         '&:hover': {
-                                            backgroundColor: activeConversationId === convo.conversation_id ? 'transparent' : '#1E1E1E',
+                                            backgroundColor: activeConversationId === convo.conversation_id ? 'transparent' : systemTheme.palette.customColors.convoHoverColor,
                                         },
                                         '&:active': {
                                             backgroundColor: 'transparent',
@@ -55,7 +56,7 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                             alignItems: 'center',
                                             justifyContent: 'space-between',
                                             width: '100%',
-                                            backgroundColor: activeConversationId === convo.conversation_id ? '#212121' : 'transparent',
+                                            backgroundColor: activeConversationId === convo.conversation_id ? systemTheme.palette.customColors.convoActiveColor : 'transparent',
                                             borderRadius: '8px',
                                             transition: 'background-color 0.3s ease',
                                             cursor: 'pointer',
@@ -72,11 +73,11 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                             primaryTypographyProps={{
                                                 sx: {
                                                     fontSize: '14px',
-                                                    color: '#ECECEC',
                                                     fontWeight: 400,
                                                     overflow: 'hidden',
                                                     whiteSpace: 'nowrap',
                                                     textOverflow: 'ellipsis',
+                                                    color: systemTheme.palette.text.primary
                                                 },
                                             }}
                                         />

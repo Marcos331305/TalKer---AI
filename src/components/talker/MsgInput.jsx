@@ -12,6 +12,7 @@ import { useNavigate } from 'react-router-dom';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import systemTheme from '../../scripts/muiTheme';
 
 const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating, setIsNavigating }) => {
   const [isRecording, setIsRecording] = useState(false);
@@ -352,7 +353,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         sx={{
           display: "flex",
           flexDirection: 'column',
-          backgroundColor: "#2F2F2F",
+          backgroundColor: systemTheme.palette.secondary.main,
           borderRadius: "1.5rem",
           px: '10px',
           py: '4px',
@@ -384,7 +385,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             sx={{
               flex: 1, // Allow input to take all available space
               fontSize: '16px',
-              color: 'white',
+              color: systemTheme.palette.text.primary,
               borderRadius: '8px',
               '& .MuiInputBase-input': {
                 border: 'none',
@@ -406,7 +407,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         }}>
           {/* fileUpload Icon */}
           <IconButton sx={{
-            color: 'white',
+            color: systemTheme.palette.customColors.customColor,
             p: 0,
             pl: '1px'
           }} aria-label="upload file">
@@ -436,7 +437,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
                 }
               }}
               sx={{
-                color: "white",
+                color: systemTheme.palette.customColors.customColor,
                 padding: '4px',
                 display: message.trim() ? "none" : "flex",
               }}
@@ -448,17 +449,17 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
               onClick={handleSend}
               disabled={!message.trim()}
               sx={{
-                backgroundColor: !message.trim() ? '#676767 !important' : 'white',
+                backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
                 borderRadius: '50%', // Fully rounded button
                 padding: '4px',
                 '&:hover': {
-                  backgroundColor: !message.trim() ? '#676767 !important' : 'white',
+                  backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
                 },
               }}
             >
               <KeyboardArrowUpIcon
                 sx={{
-                  color: !message.trim() ? '#2F2F2F !important' : '#000000',
+                  color: !message.trim() ? systemTheme.palette.customColors.customColor3 : systemTheme.palette.customColors.customColor2,
                 }}
               />
             </IconButton>
@@ -532,8 +533,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       {/* Disclaimer message */}
       <Typography Typography
         variant="body2"
-        color="primary"
-        sx={{ padding: "8px", textAlign: "center", fontSize: '12px' }}
+        sx={{ padding: "8px", textAlign: "center", fontSize: '12px', color: systemTheme.palette.text.secondary }}
       >
         TalKer can make mistakes.Check important info.
       </Typography>

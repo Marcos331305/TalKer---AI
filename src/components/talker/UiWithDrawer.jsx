@@ -31,6 +31,8 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import Button from '@mui/material/Button';
 import ShareIcon from '@mui/icons-material/Share';
 import ShareDialog from './navbar/ShareDialog.jsx';
+import Settings from './Settings.jsx'
+import systemTheme from '../../scripts/muiTheme.js';
 
 const drawerWidth = 260;
 
@@ -98,6 +100,7 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
     const [open, setOpen] = React.useState(true);
     const [anchorEl, setAnchorEl] = React.useState(null);
     const [clicked, setClicked] = useState(false);
+    const [settingsOpened, setSettingsOpened] = useState(false);
     const [shareDialogOpen, setShareDialogOpen] = useState(false); // for shareOption
     const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
 
@@ -163,6 +166,10 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
     const handleCloseShareDialog = () => {
         setShareDialogOpen(false);
     };
+    const handleOpenSettings = () => {
+        handleClose();
+        setSettingsOpened(true);
+    };
 
     return (
         <>
@@ -200,10 +207,10 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                                 variant="h6"
                                 noWrap
                                 component="div"
-                                color="#B4B4B4"
                                 sx={{
                                     fontSize: '18px',
                                     marginInline: open ? '0px' : '12px',
+                                    color: systemTheme.palette.text.secondary
                                 }}
                             >
                                 TalKerAI
@@ -222,18 +229,20 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                                         fontSize: '14px',
                                         textTransform: 'none', // To avoid uppercase text
                                         borderRadius: '50px', // Fully rounded border
-                                        border: '1px solid #424242',
-                                        color: '#FFFFFF', // Default text color
+                                        color: systemTheme.palette.text.primary, // Default text color
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: '6px', // Gap between icon and text
+                                        borderWidth: '1px',
+                                        borderStyle: 'solid',
+                                        borderColor: systemTheme.palette.customColors.borderColor,
                                         '&:hover': {
-                                            backgroundColor: '#2F2F2F', // Hover background color
-                                            borderColor: '#424242', // Optional: Maintain border color on hover
+                                            backgroundColor: systemTheme.palette.secondary.main, // Hover background color
+                                            borderColor: systemTheme.palette.customColors.borderColor, // Optional: Maintain border color on hover
                                         },
                                     }}
                                 >
-                                    <ShareIcon sx={{ fontSize: '16px' }} />
+                                    <ShareIcon sx={{ fontSize: '16px', color: systemTheme.palette.text.primary }} />
                                     Share
                                 </Button>
                             </Box>
@@ -273,7 +282,9 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                                                 height: 40,
                                                 transition: '0.3s', // Smooth transition of styles
                                                 '&:hover': {
-                                                    border: '1px solid white', // Thin light border on hover
+                                                    borderStyle: 'solid',
+                                                    borderWidth: '1px',
+                                                    borderColor: systemTheme.palette.customColors.customColor
                                                 },
                                                 cursor: 'pointer',
                                             }}
@@ -362,18 +373,20 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                     sx={{
                         '& .MuiPaper-root': {
                             borderRadius: '14px',
-                            border: '1px solid #5D5D5D',
+                            borderColor: systemTheme.palette.customColors.specialBorderColor,
+                            borderWidth: '1px',
+                            borderStyle: 'solid'
                         },
                     }}
                 >
-                    <List sx={{ width: 240, bgcolor: '#2F2F2F', padding: '8px', boxSizing: 'border-box' }}>
+                    <List sx={{ width: 240, bgcolor: systemTheme.palette.secondary.main, padding: '8px', boxSizing: 'border-box' }}>
                         {/* Email at the top */}
                         <ListItem sx={{
                             py: '12px',
                         }}>
-                            <Typography variant="body2" sx={{ color: '#E3E3E3', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
+                            <Typography variant="body2" sx={{ color: systemTheme.palette.customColors.customColor, px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
                         </ListItem>
-                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
+                        <Divider sx={{ bgcolor: systemTheme.palette.customColors.specialBorderColor, height: '1px' }} />
 
                         {/* Mid Part */}
                         {/* Your Data */}
@@ -385,11 +398,11 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                             cursor: 'pointer',
                             borderRadius: '9px',
                             ":hover": {
-                                bgcolor: '#424242',
+                                bgcolor: systemTheme.palette.customColors.hoverColor,
                             }
                         }}>
-                            <PersonIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Your Data</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <PersonIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>Your Data</Typography>} />
                         </ListItem>
                         {/* Memory */}
                         <ListItem button sx={{
@@ -399,11 +412,11 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                             cursor: 'pointer',
                             borderRadius: '9px',
                             ":hover": {
-                                bgcolor: '#424242'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             }
                         }}>
-                            <MemoryIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Memory</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <MemoryIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>Memory</Typography>} />
                         </ListItem>
                         {/* Security */}
                         <ListItem button sx={{
@@ -413,40 +426,40 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                             cursor: 'pointer',
                             borderRadius: '9px',
                             ":hover": {
-                                bgcolor: '#424242'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             }
                         }}>
-                            <SecurityIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Security</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <SecurityIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>Security</Typography>} />
                         </ListItem>
                         {/* Settings */}
-                        <ListItem button sx={{
+                        <ListItem button onClick={handleOpenSettings} sx={{
                             pt: '4px',
                             pb: '8px',
                             cursor: 'pointer',
                             borderRadius: '9px',
                             mb: '3px',
                             ":hover": {
-                                bgcolor: '#424242',
+                                bgcolor: systemTheme.palette.customColors.hoverColor,
                             }
                         }}>
-                            <SettingsIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Settings</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <SettingsIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>Settings</Typography>} />
                         </ListItem>
-                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
+                        <Divider sx={{ bgcolor: systemTheme.palette.customColors.specialBorderColor, height: '1px' }} />
                         {/* FeedBack */}
                         <ListItem button sx={{
                             cursor: 'pointer',
                             borderRadius: '9px',
                             ":hover": {
-                                bgcolor: '#424242'
+                                bgcolor: systemTheme.palette.customColors.hoverColor
                             },
                             my: '3px'
                         }}>
-                            <FeedbackIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>FeedBack</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <FeedbackIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>FeedBack</Typography>} />
                         </ListItem>
-                        <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
+                        <Divider sx={{ bgcolor: systemTheme.palette.customColors.specialBorderColor, height: '1px' }} />
 
                         {/* Logout option */}
                         <ListItem sx={{
@@ -454,17 +467,19 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                             transition: 'transform 0.1s ease',
                             mt: '3px',
                             '&:hover': {
-                                backgroundColor: '#424242',
+                                backgroundColor: systemTheme.palette.customColors.hoverColor,
                             },
                             cursor: 'pointer',
                             borderRadius: '9px'
                         }}
                             button onClick={handleLogOut}>
-                            <LogoutIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
-                            <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>{clicked ? "Logging out..." : "Logout"}</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
+                            <LogoutIcon sx={{ color: systemTheme.palette.customColors.moreOptionIconsColor, marginRight: 1, fontSize: '18px' }} />
+                            <ListItemText primary={<Typography sx={{ color: systemTheme.palette.customColors.customColor, fontSize: '14px' }}>{clicked ? "Logging out..." : "Logout"}</Typography>} />
                         </ListItem>
                     </List>
                 </Popover>
+                {/* renderingUserMenuComponents */}
+                <Settings settingsOpened={settingsOpened} setSettingsOpened={setSettingsOpened} />
             </Box>
         </>
 

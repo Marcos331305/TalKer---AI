@@ -4,6 +4,7 @@ import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
 import { parseTalKerResponse } from '../../scripts/app'
 import CodeBox from './CodeBox';
+import systemTheme from '../../scripts/muiTheme';
 
 // Styled container for AI messages
 const Container = styled(Box)({
@@ -118,7 +119,9 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
       <Box
         sx={{
           padding: '5px',
-          border: '1px solid #424242',
+          borderStyle: 'solid',
+          borderWidth: '1px',
+          borderColor: systemTheme.palette.customColors.borderColor,
           borderRadius: '50%',
           display: 'flex',
           justifyContent: 'center',
@@ -145,11 +148,11 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
             xl: '40%',
           },
           maxWidth: '100%',
-          color: '#ECECEC',
+          color: systemTheme.palette.text.primary
         }}
       >
         {isLoading ? (
-          <Typography sx={{ color: "#757575", mt: "18px" }}>
+          <Typography sx={{ color: systemTheme.palette.customColors.generatingWaitColor, mt: "18px" }}>
             Generating, please wait...
           </Typography>
         ) : (
