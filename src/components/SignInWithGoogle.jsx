@@ -23,7 +23,7 @@ const SignInWithGoogle = () => {
                 onClick={handleGoogleSignIn}
                 sx={{
                     textTransform: 'none',
-                    color: 'text.primary',
+                    color: '#555555',
                     borderColor: '#009688',
                     '&:hover': { borderColor: '#009688', backgroundColor: 'action.hover' },
                     width: '100%',

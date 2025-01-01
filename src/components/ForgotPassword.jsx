@@ -109,7 +109,6 @@ export default function Login() {
                         fullWidth
                         error={emailError}
                         variant="standard"
-                        sx={{ width: "100%" }}
                         value={emailInput}
                         InputProps={{}}
                         size="small"
@@ -117,6 +116,12 @@ export default function Login() {
                         onChange={(event) => {
                             setEmailInput(event.target.value);
                         }}
+                        sx={{
+                            width: "100%",
+                            '& .MuiInputBase-input': {
+                              color: '#555555', // Apply the text color here
+                            }
+                          }}
                     />
                 </div>
 

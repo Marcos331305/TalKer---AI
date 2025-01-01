@@ -17,6 +17,7 @@ import {
   Alert,
   Stack,
   Box,
+  Typography,
 } from "@mui/material";
 
 // Material UI Icon Imports
@@ -191,20 +192,25 @@ export default function Login() {
       }}>
         {/* LoadingView */}
         <Loading loading={loading} message={'Logging in, please wait...'} />
-        <div>
+        <div style={{ color: '#555555' }}>
           <TextField
             label="Email Address"
             fullWidth
             error={emailError}
             id="standard-basic"
             variant="standard"
-            sx={{ width: "100%" }}
             value={emailInput}
             InputProps={{}}
             size="small"
             onBlur={handleEmail}
             onChange={(event) => {
               setEmailInput(event.target.value);
+            }}
+            sx={{
+              width: "100%",
+              '& .MuiInputBase-input': {
+                color: '#555555', // Apply the text color here
+              }
             }}
           />
         </div>
@@ -217,6 +223,9 @@ export default function Login() {
               Password
             </InputLabel>
             <Input
+              sx={{
+                color: '#555555'
+              }}
               error={passwordError}
               onBlur={handlePassword}
               id="standard-adornment-password"
@@ -266,7 +275,11 @@ export default function Login() {
                 '&.MuiTouchRipple-root': { display: 'none' }, // Ensures ripple is disabled
               }}
             />
-            Remember Me
+            <Typography sx={{
+              color: '#555555'
+            }}>
+              Remember Me
+            </Typography>
           </label>
         </div>
 
@@ -304,7 +317,7 @@ export default function Login() {
         <div style={{ marginTop: "16px", fontSize: "10px" }} margin="left">
           <a onClick={handleForgotPassClick} style={{ fontSize: '14px', color: '#009688', cursor: 'pointer' }}>Forgot password?</a>
           <br />
-          <p style={{ display: 'inline', fontSize: '14px', fontWeight: 400 }}>New user?{" "}</p>
+          <p style={{ display: 'inline', fontSize: '14px', fontWeight: 400, color: '#555555' }}>New user?{" "}</p>
           <small onClick={handleSignupClick} style={{ color: "#009688", cursor: 'pointer', fontSize: '14px', display: 'inline', fontWeight: 400 }}>
             Register Here
           </small>

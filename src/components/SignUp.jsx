@@ -191,7 +191,6 @@ export default function Login() {
             error={usernameError}
             label="Username"
             variant="standard"
-            sx={{ width: "100%" }}
             size="small"
             value={usernameInput}
             InputProps={{}}
@@ -199,6 +198,12 @@ export default function Login() {
               setUsernameInput(event.target.value);
             }}
             onBlur={handleUsername}
+            sx={{
+              width: "100%",
+              '& .MuiInputBase-input': {
+                color: '#555555', // Apply the text color here
+              }
+            }}
           />
         </div>
 
@@ -208,13 +213,18 @@ export default function Login() {
             fullWidth
             error={emailError}
             variant="standard"
-            sx={{ width: "100%" }}
             value={emailInput}
             InputProps={{}}
             size="small"
             onBlur={handleEmail}
             onChange={(event) => {
               setEmailInput(event.target.value);
+            }}
+            sx={{
+              width: "100%",
+              '& .MuiInputBase-input': {
+                color: '#555555', // Apply the text color here
+              }
             }}
           />
         </div>
@@ -246,6 +256,9 @@ export default function Login() {
                   </IconButton>
                 </InputAdornment>
               }
+              sx={{
+                color: '#555555', // Apply the text color here
+              }}
             />
           </FormControl>
         </div>
@@ -281,7 +294,7 @@ export default function Login() {
           </Stack>
         )}
         <div style={{ fontSize: "10px", marginTop: "16px" }} margin="left">
-          <p style={{ fontSize: '14px', display: 'inline', fontWeight: 400 }}>Do you have an account?{" "}</p>
+          <p style={{ fontSize: '14px', display: 'inline', fontWeight: 400, color: '#555555' }}>Do you have an account?{" "}</p>
           <small onClick={handleLoginClick} style={{ color: "#009688", fontSize: '14px', cursor: 'pointer' }}>
             Login
           </small>
