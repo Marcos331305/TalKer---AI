@@ -40,13 +40,16 @@ import MemoryIcon from '@mui/icons-material/Memory';
 import SecurityIcon from '@mui/icons-material/Security';
 import SettingsIcon from '@mui/icons-material/Settings';
 import FeedbackIcon from '@mui/icons-material/Feedback';
+import Settings from '../Settings';
+import systemTheme from '../../../scripts/muiTheme';
 
 const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     const [user, setUser] = useState(null);
-    const [ loading, setLoading ] = useState(true);
+    const [loading, setLoading] = useState(true);
     const [clicked, setClicked] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const [settingsOpened, setSettingsOpened] = useState(false);
     const [activeConversationTitle, setActiveConversationTitle] = useState('');
     const [selectedConversationId, setSelectedConversationId] = useState(null);
     const [renameDialogOpen, setRenameDialogOpen] = useState(false);
@@ -230,6 +233,15 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
         dispatch(renConversation({ activeConversationId, newTitle: activeConversationTitle }));
         dispatch(updateConversationTitle({ activeConversationId, activeConversationTitle }));
         setRenameDialogOpen(false);
+    };
+
+    const handleOpenSettings = () => {
+        setTimeout(() => {
+            handleClose()
+        }, 100);
+        setTimeout(() => {
+            setSettingsOpened(true);
+        }, 250);
     };
 
     return (
@@ -471,7 +483,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             <ListItem sx={{
                                 py: '12px'
                             }}>
-                                <Typography variant="body2" sx={{ color: '#E3E3E3',  px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
+                                <Typography variant="body2" sx={{ color: '#E3E3E3', px: '2px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>{(user) && user.email}</Typography>
                             </ListItem>
                             <Divider sx={{ bgcolor: '#5D5D5D', height: '1px' }} />
 
@@ -496,17 +508,22 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             </ListItem>
                             {/* Security */}
                             <ListItem button sx={{
-                                 px: '16px',
-                                 pt: '4px',
-                                 pb: '4px'
+                                px: '16px',
+                                pt: '4px',
+                                pb: '4px'
                             }}>
                                 <SecurityIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
                                 <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Security</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
                             </ListItem>
                             {/* Settings */}
-                            <ListItem button sx={{
+                            <ListItem onClick={handleOpenSettings} button sx={{
                                 pt: '4px',
-                                pb: '8px'
+                                pb: '8px',
+                                borderRadius: '9px',
+                                mb: '3px',
+                                ":hover": {
+                                    bgcolor: systemTheme.palette.customColors.hoverColor,
+                                }
                             }}>
                                 <SettingsIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
                                 <ListItemText primary={<Typography sx={{ color: '#E3E3E3', fontSize: '14px' }}>Settings</Typography>} sx={{ color: '#E3E3E3', fontSize: '14px !important' }} />
@@ -523,9 +540,11 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             <ListItem sx={{
                                 transform: clicked ? 'scale(0.95)' : 'scale(1)',
                                 transition: 'transform 0.1s ease',
+                                borderRadius: '9px',
                                 '&:hover': {
-                                    backgroundColor: '#444',
+                                    bgcolor: systemTheme.palette.customColors.hoverColor,
                                 },
+                                mt: '3px'
                             }}
                                 button onClick={handleLogOut}>
                                 <LogoutIcon sx={{ color: '#E3E3E3', marginRight: 1, fontSize: '18px' }} />
@@ -533,6 +552,8 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                             </ListItem>
                         </List>
                     </Popover>
+                    {/* renderingUserMenuComponents */}
+                    <Settings settingsOpened={settingsOpened} setSettingsOpened={setSettingsOpened} />
                 </Box>
             </Drawer>
         </>

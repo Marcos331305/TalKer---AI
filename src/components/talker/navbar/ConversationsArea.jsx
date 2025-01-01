@@ -39,63 +39,68 @@ const ConversationsArea = ({ groupedConversations, activeConversationId, handleI
                                         alignItems: 'center',
                                         py: activeConversationId === convo.conversation_id ? '0px' : '8px',
                                         px: '12px',
-                                        '&:hover': {
-                                            backgroundColor: activeConversationId === convo.conversation_id ? 'transparent' : systemTheme.palette.customColors.convoHoverColor,
-                                        },
-                                        '&:active': {
-                                            backgroundColor: 'transparent',
-                                        },
-                                        '&:focus': {
-                                            backgroundColor: 'transparent',
-                                        },
+                                        '@media (min-width: 1200px)': {
+                                            '&:hover': {
+                                                backgroundColor:
+                                                    activeConversationId === convo.conversation_id
+                                                        ? 'transparent'
+                                                        : systemTheme.palette.customColors.convoHoverColor,
+                                            },
+                                            '&:active': {
+                                                backgroundColor: 'transparent',
+                                            },
+                                            '&:focus': {
+                                                backgroundColor: 'transparent',
+                                            },
+                                        }
                                     }}
-                                >
-                                    <Box
-                                        sx={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'space-between',
-                                            width: '100%',
-                                            backgroundColor: activeConversationId === convo.conversation_id ? systemTheme.palette.customColors.convoActiveColor : 'transparent',
-                                            borderRadius: '8px',
-                                            transition: 'background-color 0.3s ease',
-                                            cursor: 'pointer',
-                                        }}
-                                    >
-                                        <ListItemText
-                                            primary={convo.title}
+                                        >
+                                        <Box
                                             sx={{
-                                                mr: '5px',
-                                                maxWidth: activeConversationId === convo.conversation_id ? 'calc(100% - 40px)' : '100%',
-                                                px: 1,
-                                                my: 0,
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'space-between',
+                                                width: '100%',
+                                                backgroundColor: activeConversationId === convo.conversation_id ? systemTheme.palette.customColors.convoActiveColor : 'transparent',
+                                                borderRadius: '8px',
+                                                transition: 'background-color 0.3s ease',
+                                                cursor: 'pointer',
                                             }}
-                                            primaryTypographyProps={{
-                                                sx: {
-                                                    fontSize: '14px',
-                                                    fontWeight: 400,
-                                                    overflow: 'hidden',
-                                                    whiteSpace: 'nowrap',
-                                                    textOverflow: 'ellipsis',
-                                                    color: systemTheme.palette.text.primary
-                                                },
-                                            }}
-                                        />
-                                        {activeConversationId === convo.conversation_id && (
-                                            <ListItemIcon sx={{ marginLeft: 'auto', justifyContent: 'flex-end' }}>
-                                                <IconButton onClick={handleClickMore}>
-                                                    <MoreHorizIcon color="primary" />
-                                                </IconButton>
-                                            </ListItemIcon>
-                                        )}
-                                    </Box>
+                                        >
+                                            <ListItemText
+                                                primary={convo.title}
+                                                sx={{
+                                                    mr: '5px',
+                                                    maxWidth: activeConversationId === convo.conversation_id ? 'calc(100% - 40px)' : '100%',
+                                                    px: 1,
+                                                    my: 0,
+                                                }}
+                                                primaryTypographyProps={{
+                                                    sx: {
+                                                        fontSize: '14px',
+                                                        fontWeight: 400,
+                                                        overflow: 'hidden',
+                                                        whiteSpace: 'nowrap',
+                                                        textOverflow: 'ellipsis',
+                                                        color: systemTheme.palette.text.primary
+                                                    },
+                                                }}
+                                            />
+                                            {activeConversationId === convo.conversation_id && (
+                                                <ListItemIcon sx={{ marginLeft: 'auto', justifyContent: 'flex-end' }}>
+                                                    <IconButton onClick={handleClickMore}>
+                                                        <MoreHorizIcon color="primary" />
+                                                    </IconButton>
+                                                </ListItemIcon>
+                                            )}
+                                        </Box>
                                 </ListItem>
-                            );
-                        })}
-                    </Box>
                 );
             })}
-        </div>
+        </Box>
+    );
+})}
+        </div >
     );
 };
 

@@ -3,8 +3,16 @@ import { Box, Divider, Backdrop, IconButton, Select, MenuItem, FormControl, Inpu
 import CloseIcon from '@mui/icons-material/Close';
 import { ArrowDropDown, Check } from '@mui/icons-material';
 import { ThemeContext } from '../../main';
+import { getAuth, signOut } from 'firebase/auth';
+import { useDispatch } from 'react-redux';
+import { setAuthState } from '../../features/authSlice';
+import { clearActiveConversationId } from '../../features/conversationsSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Settings = ({ settingsOpened, setSettingsOpened }) => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [ clicked, setClicked ] = useState(false);
   const { isLightMode, setIsLightMode } = useContext(ThemeContext);
   const [themeAnchorEl, setThemeAnchorEl] = useState(null);
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
@@ -19,10 +27,7 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
     // Handle delete chats functionality here
     console.log('Delete all chats');
   };
-  const handleLogout = () => {
-    // Handle logout functionality here
-    console.log('Logout');
-  };
+
   const handleThemeChange = (selectedTheme) => {
     selectedTheme === 'light' ? setIsLightMode(true) : setIsLightMode(false);
     setTheme(selectedTheme);
@@ -33,6 +38,19 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
   const closeThemePopover = () => setThemeAnchorEl(null);
   const openLanguagePopover = (event) => setLanguageAnchorEl(event.currentTarget);
   const closeLanguagePopover = () => setLanguageAnchorEl(null);
+
+  // handle logOut
+  const handleLogOut = () => {
+    setClicked(true);
+    const auth = getAuth();
+    // firebase logOut functionality
+    setTimeout(async () => {
+      await signOut(auth);
+      dispatch(setAuthState()); // set the userAuthenticated state to false first that have using in authSlice
+      dispatch(clearActiveConversationId());
+      navigate('/'); // Redirect the user to Home-Page(loginPage)
+    }, 1000); // Duration of the logOut process
+  };
 
   return (
     <>
@@ -81,75 +99,6 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
 
             {/* Settings List */}
             <Box>
-              {/* Theme Setting */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ color: '#FFFFFF' }}>Theme</Typography>
-                {/* Button to trigger the popover */}
-                <Button
-                  onClick={openThemePopover}
-                  sx={{
-                    backgroundColor: '#444444',
-                    color: '#FFFFFF',
-                    textTransform: 'none',
-                    '&:hover': {
-                      backgroundColor: '#555555',
-                    },
-                  }}
-                  endIcon={<ArrowDropDown />}
-                >
-                  <Typography>{theme.charAt(0).toUpperCase() + theme.slice(1)}</Typography>
-                </Button>
-                {/* ThemePopover */}
-                <Popover
-                  open={Boolean(themeAnchorEl)}
-                  anchorEl={themeAnchorEl}
-                  onClose={closeThemePopover}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  sx={{
-                    zIndex: 11000
-                  }}
-                >
-                  <Box sx={{ backgroundColor: '#444444', color: '#FFFFFF', minWidth: 120 }}>
-                    <MenuItem
-                      onClick={() => handleThemeChange('system')}
-                      sx={{
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          backgroundColor: '#555555',
-                        },
-                      }}
-                    >
-                      <ListItemText>System</ListItemText>
-                      {theme === 'system' && (
-                        <ListItemIcon>
-                          <Check sx={{ color: '#FFFFFF' }} />
-                        </ListItemIcon>
-                      )}
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => handleThemeChange('light')}
-                      sx={{
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          backgroundColor: '#555555',
-                        },
-                      }}
-                    >
-                      <ListItemText>Light</ListItemText>
-                      {theme === 'light' && (
-                        <ListItemIcon>
-                          <Check sx={{ color: '#FFFFFF' }} />
-                        </ListItemIcon>
-                      )}
-                    </MenuItem>
-                  </Box>
-                </Popover>
-              </Box>
-              <Divider sx={{ my: 1, backgroundColor: '#444444' }} />
-
               {/* Language Setting */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography sx={{ color: '#FFFFFF' }}>Language</Typography>
@@ -244,7 +193,7 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                 <Typography sx={{ color: '#FFFFFF' }}>Logout on this Device</Typography>
                 <Button
                   variant="outlined"
-                  onClick={handleLogout}
+                  onClick={handleLogOut}
                   sx={{
                     backgroundColor: '#2F2F2F',
                     color: '#FFFFFF',
@@ -255,7 +204,7 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                     },
                   }}
                 >
-                  Log out
+                  {clicked ? "Logging out..." : "Logout"}
                 </Button>
               </Box>
             </Box>
