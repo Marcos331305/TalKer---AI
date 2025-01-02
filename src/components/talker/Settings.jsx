@@ -13,31 +13,11 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [clicked, setClicked] = useState(false);
-  const { isLightMode, setIsLightMode } = useContext(ThemeContext);
-  const [themeAnchorEl, setThemeAnchorEl] = useState(null);
-  const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
-  const [theme, setTheme] = useState('system');
-  const [language, setLanguage] = useState('English');
 
-  const handleLanguageChange = (selectedLanguage) => {
-    setLanguage(selectedLanguage);
-    closeLanguagePopover();
-  };
   const handleDeleteChats = () => {
     // Handle delete chats functionality here
     console.log('Delete all chats');
   };
-
-  const handleThemeChange = (selectedTheme) => {
-    selectedTheme === 'light' ? setIsLightMode(true) : setIsLightMode(false);
-    setTheme(selectedTheme);
-    closeThemePopover();
-  };
-  // Open/Close Popover Handlers
-  const openThemePopover = (event) => setThemeAnchorEl(event.currentTarget);
-  const closeThemePopover = () => setThemeAnchorEl(null);
-  const openLanguagePopover = (event) => setLanguageAnchorEl(event.currentTarget);
-  const closeLanguagePopover = () => setLanguageAnchorEl(null);
 
   // handle logOut
   const handleLogOut = () => {
@@ -99,106 +79,6 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
 
             {/* Settings List */}
             <Box>
-              {/* Language Setting */}
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Typography sx={{ color: '#FFFFFF' }}>Language</Typography>
-                {/* Button to trigger the popover */}
-                <Button
-                  onClick={openLanguagePopover}
-                  sx={{
-                    backgroundColor: '#444444',
-                    color: '#FFFFFF',
-                    textTransform: 'none',
-                    '&:hover': {
-                      backgroundColor: '#555555',
-                    },
-                  }}
-                  endIcon={<ArrowDropDown />}
-                >
-                  <Typography>{language.charAt(0).toUpperCase() + language.slice(1)}</Typography>
-                </Button>
-                {/* languagePopover */}
-                <Popover
-                  open={Boolean(languageAnchorEl)}
-                  anchorEl={languageAnchorEl}
-                  onClose={closeLanguagePopover}
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                  }}
-                  sx={{
-                    zIndex: 11000,
-                    '& .MuiPaper-root': {
-                      borderRadius: '16px',
-                      border: '1.2px solid #5D5D5D'
-                    },
-                  }}
-                  transitionDuration={{
-                    appear: 0, // No delay for appearing
-                    enter: 0,  // No delay for entering (showing)
-                    exit: 1000, // Add a delay (200ms) for closing
-                  }}
-                >
-                  <Box sx={{ backgroundColor: '#444444', color: '#FFFFFF', minWidth: 125 }}>
-                    <MenuItem
-                      onClick={() => handleLanguageChange('English')}
-                      sx={{
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          backgroundColor: '#555555',
-                        },
-                      }}
-                    >
-                      <ListItemText
-                        primary="English"
-                        primaryTypographyProps={{
-                          sx: {
-                            fontSize: '14px',
-                          },
-                        }}
-                      />
-
-                      {language === 'English' && (
-                        <ListItemIcon sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                        }}>
-                          <CheckCircle sx={{ color: '#FFFFFF', fontSize: '14px' }} />
-                        </ListItemIcon>
-                      )}
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => handleLanguageChange('Hindi')}
-                      sx={{
-                        color: '#FFFFFF',
-                        '&:hover': {
-                          backgroundColor: '#555555',
-                        },
-                      }}
-                    >
-                      <ListItemText
-                        primary="Hindi"
-                        primaryTypographyProps={{
-                          sx: {
-                            fontSize: '14px',
-                          },
-                        }}
-                      />
-
-                      {language === 'Hindi' && (
-                        <ListItemIcon sx={{
-                          display: 'flex',
-                          justifyContent: 'flex-end',
-                        }}>
-                          <CheckCircle sx={{ color: '#FFFFFF', fontSize: '14px' }} />
-                        </ListItemIcon>
-                      )}
-                    </MenuItem>
-                  </Box>
-                </Popover>
-              </Box>
-              <Divider sx={{ my: 1, backgroundColor: '#444444' }} />
-
               {/* Delete All Chats */}
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Typography sx={{ color: '#FFFFFF' }}>Delete All Chats</Typography>
