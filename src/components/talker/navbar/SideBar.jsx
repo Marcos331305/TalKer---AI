@@ -236,12 +236,10 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     };
 
     const handleOpenSettings = () => {
-        setTimeout(() => {
-            handleClose()
-        }, 100);
+        handleClose()
         setTimeout(() => {
             setSettingsOpened(true);
-        }, 250);
+        }, 700);
     };
 
     return (
@@ -476,6 +474,11 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                                 borderRadius: '.5rem',
                                 border: '1px solid #5D5D5D',
                             },
+                        }}
+                        transitionDuration={{
+                            appear: 0, // No delay for appearing
+                            enter: 0,  // No delay for entering (showing)
+                            exit: 700, // Add a delay (200ms) for closing
                         }}
                     >
                         <List sx={{ width: 240, bgcolor: '#2F2F2F', padding: '6px' }}>

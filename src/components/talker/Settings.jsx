@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Box, Divider, Backdrop, IconButton, Select, MenuItem, FormControl, InputLabel, Button, Typography, Popover, ListItemText, ListItemIcon } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ArrowDropDown, Check } from '@mui/icons-material';
+import { ArrowDropDown, Check, CheckCircle } from '@mui/icons-material';
 import { ThemeContext } from '../../main';
 import { getAuth, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
@@ -12,7 +12,7 @@ import { useNavigate } from 'react-router-dom';
 const Settings = ({ settingsOpened, setSettingsOpened }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [ clicked, setClicked ] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const { isLightMode, setIsLightMode } = useContext(ThemeContext);
   const [themeAnchorEl, setThemeAnchorEl] = useState(null);
   const [languageAnchorEl, setLanguageAnchorEl] = useState(null);
@@ -117,7 +117,7 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                 >
                   <Typography>{language.charAt(0).toUpperCase() + language.slice(1)}</Typography>
                 </Button>
-                {/* ThemePopover */}
+                {/* languagePopover */}
                 <Popover
                   open={Boolean(languageAnchorEl)}
                   anchorEl={languageAnchorEl}
@@ -127,10 +127,19 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                     horizontal: 'left',
                   }}
                   sx={{
-                    zIndex: 11000
+                    zIndex: 11000,
+                    '& .MuiPaper-root': {
+                      borderRadius: '16px',
+                      border: '1.2px solid #5D5D5D'
+                    },
+                  }}
+                  transitionDuration={{
+                    appear: 0, // No delay for appearing
+                    enter: 0,  // No delay for entering (showing)
+                    exit: 1000, // Add a delay (200ms) for closing
                   }}
                 >
-                  <Box sx={{ backgroundColor: '#444444', color: '#FFFFFF', minWidth: 120 }}>
+                  <Box sx={{ backgroundColor: '#444444', color: '#FFFFFF', minWidth: 125 }}>
                     <MenuItem
                       onClick={() => handleLanguageChange('English')}
                       sx={{
@@ -140,10 +149,21 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                         },
                       }}
                     >
-                      <ListItemText>English</ListItemText>
-                      {theme === 'English' && (
-                        <ListItemIcon>
-                          <Check sx={{ color: '#FFFFFF' }} />
+                      <ListItemText
+                        primary="English"
+                        primaryTypographyProps={{
+                          sx: {
+                            fontSize: '14px',
+                          },
+                        }}
+                      />
+
+                      {language === 'English' && (
+                        <ListItemIcon sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                        }}>
+                          <CheckCircle sx={{ color: '#FFFFFF', fontSize: '14px' }} />
                         </ListItemIcon>
                       )}
                     </MenuItem>
@@ -156,10 +176,21 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                         },
                       }}
                     >
-                      <ListItemText>Hindi</ListItemText>
-                      {theme === 'Hindi' && (
-                        <ListItemIcon>
-                          <Check sx={{ color: '#FFFFFF' }} />
+                      <ListItemText
+                        primary="Hindi"
+                        primaryTypographyProps={{
+                          sx: {
+                            fontSize: '14px',
+                          },
+                        }}
+                      />
+
+                      {language === 'Hindi' && (
+                        <ListItemIcon sx={{
+                          display: 'flex',
+                          justifyContent: 'flex-end',
+                        }}>
+                          <CheckCircle sx={{ color: '#FFFFFF', fontSize: '14px' }} />
                         </ListItemIcon>
                       )}
                     </MenuItem>
