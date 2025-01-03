@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Box, Typography } from '@mui/material'
 import UserMessageContainer from './UserMessageContainer'
 import AiMessageContainer from './AiMessageContainer'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
 import { fetchMessages } from '../../features/messageSlice'
-import Typewriter from 'typewriter-effect';
 import { Helmet } from 'react-helmet-async'
+import { StateContext } from '../../main'
 
 const ChatArea = ({ chatContainerRef }) => {
-    const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
+    const { isTypingEffectFinished, setIsTypingEffectFinished } = useContext(StateContext)
     const { conversationId: conversationIdAsString } = useParams();
     const conversationId = conversationIdAsString ? Number(conversationIdAsString) : null;
     const dispatch = useDispatch();

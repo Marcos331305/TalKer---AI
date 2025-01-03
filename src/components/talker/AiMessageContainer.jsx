@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
 import { parseTalKerResponse } from '../../scripts/app'
 import CodeBox from './CodeBox';
 import systemTheme from '../../scripts/muiTheme';
+import { StateContext } from '../../main';
 
 // Styled container for AI messages
 const Container = styled(Box)({
@@ -29,7 +30,11 @@ const Logo = styled('img')({
   height: '20px',
 });
 
-const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffectFinished, chatContainerRef }) => {
+const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef }) => {
+  // Context for StopIcon while message is being typed
+  const { isTypingEffectActive, setIsTypingEffectActive, isTypingEffectFinished, setIsTypingEffectFinished } = useContext(StateContext);
+
+
   // Parse the message into interleaved text and code blocks
   const content = parseTalKerResponse(message);
 
@@ -112,6 +117,13 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, setIsTypingEffec
 
     return () => clearInterval(typingInterval); // Cleanup
   }, [currentContentIndex, typingIndex, isNewMessage, content]);
+
+  // Separate useEffect to hide stop button when typing is finished
+useEffect(() => {
+  if (isTypingEffectFinished) {
+    setIsTypingEffectActive(false); // Hide stop button when typing is complete
+  }
+}, [isTypingEffectFinished]);
 
   return (
     <Container sx={{ width: '100%' }}>

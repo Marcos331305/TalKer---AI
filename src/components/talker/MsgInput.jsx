@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import { InputBase, IconButton, Typography, Box, Collapse } from '@mui/material';
 import MicIcon from '@mui/icons-material/Mic';
 import MicOffIcon from '@mui/icons-material/MicOff';
@@ -13,8 +13,11 @@ import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import systemTheme from '../../scripts/muiTheme';
+import { StateContext } from '../../main';
 
-const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating, setIsNavigating }) => {
+const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating }) => {
+  // StateContext for stopGeneratingResponseButton
+  const { isTypingEffectActive, setIsTypingEffectActive } = useContext(StateContext);
   const [isRecording, setIsRecording] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const recognitionRef = useRef(null); // Store recognition instance in ref
@@ -35,6 +38,10 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   const auth = getAuth();
   // Get the current user
   const user = auth.currentUser;
+
+  useEffect(() => {
+    console.log('isTypingEffectActive:', isTypingEffectActive);
+  }, [isTypingEffectActive]);  
 
   // fetch conversation when the component Mounts
   useEffect(() => {
@@ -65,6 +72,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
   // handle Msg sending btn
   const handleSend = async () => {
+    setIsTypingEffectActive(true); // show stopGeneratingResponseButton immediately
+
     const userMessage = {
       id: generateUniqueId(),
       content: message,
@@ -311,6 +320,11 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     }
   };
 
+  // Stop generating response
+  const handleStopGeneratingResponse = () => {
+    console.log('Stop generating response');
+  };
+
   return (
     <Box
       sx={{
@@ -444,25 +458,43 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             >
               {isRecording ? <MicOffIcon /> : <MicIcon />}
             </IconButton>
-            {/* Send Button */}
-            <IconButton
-              onClick={handleSend}
-              disabled={!message.trim()}
-              sx={{
-                backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
-                borderRadius: '50%', // Fully rounded button
-                padding: '4px',
-                '&:hover': {
-                  backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
-                },
-              }}
-            >
-              <KeyboardArrowUpIcon
+            {/* Send Button or StopBtn */}
+            {isTypingEffectActive ?
+              <IconButton
+                onClick={handleStopGeneratingResponse}
                 sx={{
-                  color: !message.trim() ? systemTheme.palette.customColors.customColor3 : systemTheme.palette.customColors.customColor2,
+                  backgroundColor: systemTheme.palette.customColors.customColor,
+                  borderRadius: '50%', // Fully rounded button
+                  padding: '4px',
                 }}
-              />
-            </IconButton>
+              >
+                <StopIcon
+                  sx={{
+                    color: '#000000',
+                    '&:hover': {
+                    backgroundColor: systemTheme.palette.customColors.customColor,
+                  },
+                  }}
+                />
+              </IconButton> :
+              <IconButton
+                onClick={handleSend}
+                disabled={!message.trim()}
+                sx={{
+                  backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
+                  borderRadius: '50%', // Fully rounded button
+                  padding: '4px',
+                  '&:hover': {
+                    backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
+                  },
+                }}
+              >
+                <KeyboardArrowUpIcon
+                  sx={{
+                    color: !message.trim() ? systemTheme.palette.customColors.customColor3 : systemTheme.palette.customColors.customColor2,
+                  }}
+                />
+              </IconButton>}
           </Box>
         </Box>
       </Box>

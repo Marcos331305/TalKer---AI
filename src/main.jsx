@@ -13,10 +13,12 @@ import { HelmetProvider } from 'react-helmet-async';
 import systemTheme from './scripts/muiTheme.js';
 import { lightTheme } from './scripts/muiTheme.js'
 
-export const ThemeContext = createContext();
+export const StateContext = createContext();
 
 const Main = () => {
   const [isLightMode, setIsLightMode] = useState(false);
+  const [isTypingEffectActive, setIsTypingEffectActive] = useState(false);
+  const [isTypingEffectFinished, setIsTypingEffectFinished] = useState(false);
 
   return (
     <StrictMode>
@@ -28,9 +30,9 @@ const Main = () => {
             padding: '0 8px',
           }} />
           <HelmetProvider>
-            <ThemeContext.Provider value={{ isLightMode, setIsLightMode }}>
+            <StateContext.Provider value={{ isLightMode, setIsLightMode, isTypingEffectActive, setIsTypingEffectActive, isTypingEffectFinished, setIsTypingEffectFinished }}>
               <App />
-            </ThemeContext.Provider>
+            </StateContext.Provider>
           </HelmetProvider>
         </ThemeProvider>
       </Provider>

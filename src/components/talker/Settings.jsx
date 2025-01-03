@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { Box, Divider, Backdrop, IconButton, Select, MenuItem, FormControl, InputLabel, Button, Typography, Popover, ListItemText, ListItemIcon } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ArrowDropDown, Check, CheckCircle } from '@mui/icons-material';
-import { ThemeContext } from '../../main';
+import { StateContext } from '../../main';
 import { getAuth, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setAuthState } from '../../features/authSlice';
