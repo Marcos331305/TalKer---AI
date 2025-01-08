@@ -39,10 +39,6 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   // Get the current user
   const user = auth.currentUser;
 
-  useEffect(() => {
-    console.log('isTypingEffectActive:', isTypingEffectActive);
-  }, [isTypingEffectActive]);  
-
   // fetch conversation when the component Mounts
   useEffect(() => {
     // Fetch conversations when the component mounts
@@ -459,7 +455,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
               {isRecording ? <MicOffIcon /> : <MicIcon />}
             </IconButton>
             {/* Send Button or StopBtn */}
-            {isTypingEffectActive ?
+            {/* {isTypingEffectActive ?
               <IconButton
                 onClick={handleStopGeneratingResponse}
                 sx={{
@@ -475,8 +471,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
                     backgroundColor: systemTheme.palette.customColors.customColor,
                   },
                   }}
-                />
-              </IconButton> :
+                /> */}
+              {/* </IconButton> : */}
               <IconButton
                 onClick={handleSend}
                 disabled={!message.trim()}
@@ -494,7 +490,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
                     color: !message.trim() ? systemTheme.palette.customColors.customColor3 : systemTheme.palette.customColors.customColor2,
                   }}
                 />
-              </IconButton>}
+              </IconButton>
           </Box>
         </Box>
       </Box>

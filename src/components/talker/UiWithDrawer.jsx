@@ -220,32 +220,36 @@ export default function UiWithDrawer({ isNavigating, setIsNavigating, showScroll
                         {/* Right Side: shareBtn & userAvatar */}
                         <Box sx={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
                             {/* shareBtn */}
-                            <Box>
-                                <Button onClick={handleOpenShareDialog}
-                                    variant="outlined"
-                                    sx={{
-                                        px: '14px',
-                                        py: '8px',
-                                        fontSize: '14px',
-                                        textTransform: 'none', // To avoid uppercase text
-                                        borderRadius: '50px', // Fully rounded border
-                                        color: systemTheme.palette.text.primary, // Default text color
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '6px', // Gap between icon and text
-                                        borderWidth: '1px',
-                                        borderStyle: 'solid',
-                                        borderColor: systemTheme.palette.customColors.borderColor,
-                                        '&:hover': {
-                                            backgroundColor: systemTheme.palette.secondary.main, // Hover background color
-                                            borderColor: systemTheme.palette.customColors.borderColor, // Optional: Maintain border color on hover
-                                        },
-                                    }}
-                                >
-                                    <ShareIcon sx={{ fontSize: '16px', color: systemTheme.palette.text.primary }} />
-                                    Share
-                                </Button>
-                            </Box>
+                            {
+                                activeConversationId !== null && (
+                                    <Box>
+                                        <Button onClick={handleOpenShareDialog}
+                                            variant="outlined"
+                                            sx={{
+                                                px: '14px',
+                                                py: '8px',
+                                                fontSize: '14px',
+                                                textTransform: 'none', // To avoid uppercase text
+                                                borderRadius: '50px', // Fully rounded border
+                                                color: systemTheme.palette.text.primary, // Default text color
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px', // Gap between icon and text
+                                                borderWidth: '1px',
+                                                borderStyle: 'solid',
+                                                borderColor: systemTheme.palette.customColors.borderColor,
+                                                '&:hover': {
+                                                    backgroundColor: systemTheme.palette.secondary.main, // Hover background color
+                                                    borderColor: systemTheme.palette.customColors.borderColor, // Optional: Maintain border color on hover
+                                                },
+                                            }}
+                                        >
+                                            <ShareIcon sx={{ fontSize: '16px', color: systemTheme.palette.text.primary }} />
+                                            Share
+                                        </Button>
+                                    </Box>
+                                )
+                            }
                             {/* userAvatar */}
                             <Box
                                 onClick={handleClick}
