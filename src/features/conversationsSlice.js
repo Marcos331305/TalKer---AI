@@ -124,7 +124,26 @@ export const generateConversationTitle = createAsyncThunk(
       return result.response.text(); // Assuming this returns the response as text
     } catch (error) {
       // fallback to 'New Chat' title in the case of failure
-      return rejectWithValue('New Chat');
+      return rejectWithValue("New Chat");
+    }
+  }
+);
+
+// Delete all conversations(chats)
+export const delAllChatsFromSupabase = createAsyncThunk(
+  "conversations/delAllChatsFromSupabase",
+  async (userId, { rejectWithValue }) => {
+    try {
+      // Delete all rows where userId matches
+      const { error } = await supabase
+        .from("conversations")
+        .delete()
+        .eq("user_id", userId);
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      return rejectWithValue(error.message); // Return the error message in case of failure
     }
   }
 );
@@ -188,6 +207,9 @@ const conversationsSlice = createSlice({
         conversations: updatedConversations,
       };
     },
+    delAllChats: (state) => {
+      state.conversations = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -216,7 +238,7 @@ const conversationsSlice = createSlice({
       .addCase(fetchConversationWithMessages.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
-      })
+      });
   },
 });
 
@@ -227,6 +249,7 @@ export const {
   setActiveIndex,
   delConversation,
   renConversation,
+  delAllChats
 } = conversationsSlice.actions;
 
 export default conversationsSlice.reducer;
