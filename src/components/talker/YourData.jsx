@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Divider,
@@ -15,43 +15,19 @@ import {
   ListItemIcon,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { ArrowDropDown, Check, CheckCircle } from "@mui/icons-material";
-import { StateContext } from "../../main";
-import { getAuth, signOut } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { setAuthState } from "../../features/authSlice";
-import { clearActiveConversationId } from "../../features/conversationsSlice";
 import { useNavigate } from "react-router-dom";
 
-const Settings = ({ settingsOpened, setSettingsOpened }) => {
+const YourData = ({ yourDataOpened, setYourDataOpened }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [clicked, setClicked] = useState(false);
-
-  const handleDeleteChats = () => {
-    // Handle delete chats functionality here
-    console.log("Delete all chats");
-  };
-
-  // handle logOut
-  const handleLogOut = () => {
-    setClicked(true);
-    const auth = getAuth();
-    // firebase logOut functionality
-    setTimeout(async () => {
-      await signOut(auth);
-      dispatch(setAuthState()); // set the userAuthenticated state to false first that have using in authSlice
-      dispatch(clearActiveConversationId());
-      navigate("/"); // Redirect the user to Home-Page(loginPage)
-    }, 1000); // Duration of the logOut process
-  };
 
   return (
     <>
       {/* Backdrop */}
-      {settingsOpened && (
+      {yourDataOpened && (
         <Backdrop
-          open={settingsOpened}
+          open={yourDataOpened}
           sx={{
             zIndex: 9999, // Ensure the backdrop is behind the settings dialog but above other UI elements
             bgcolor: "rgba(5, 5, 5, 0.7)", // Semi-transparent black background
@@ -59,8 +35,8 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
         />
       )}
 
-      {/* Settings Dialog */}
-      {settingsOpened && (
+      {/* YourData Dialog */}
+      {yourDataOpened && (
         <Box
           sx={{
             position: "fixed",
@@ -85,10 +61,10 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
             }}
           >
             <Typography variant="h6" sx={{ color: "#FFFFFF" }}>
-              Settings
+              YourData
             </Typography>
             <IconButton
-              onClick={() => setSettingsOpened(false)}
+              onClick={() => setYourDataOpened(false)}
               sx={{ color: "#FFFFFF" }}
             >
               <CloseIcon />
@@ -98,9 +74,9 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
           {/* Divider */}
           <Divider sx={{ my: 2, backgroundColor: "#444444" }} />
 
-          {/* Settings List */}
+          {/* YourData List */}
           <Box>
-            {/* Delete All Chats */}
+            {/* Shared Links */}
             <Box
               sx={{
                 display: "flex",
@@ -109,39 +85,10 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
               }}
             >
               <Typography sx={{ color: "#FFFFFF" }}>
-                Delete All Chats
-              </Typography>
-              <Button
-                variant="contained"
-                onClick={handleDeleteChats}
-                sx={{
-                  backgroundColor: "#EF4444",
-                  color: "#FFFFFF",
-                  borderRadius: "50px",
-                  "&:hover": {
-                    backgroundColor: "#D83F3F",
-                  },
-                }}
-              >
-                Delete All
-              </Button>
-            </Box>
-            <Divider sx={{ my: 1, backgroundColor: "#444444" }} />
-
-            {/* Logout */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography sx={{ color: "#FFFFFF" }}>
-                Logout on this Device
+              Shared links
               </Typography>
               <Button
                 variant="outlined"
-                onClick={handleLogOut}
                 sx={{
                   backgroundColor: "#2F2F2F",
                   color: "#FFFFFF",
@@ -152,7 +99,58 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
                   },
                 }}
               >
-                {clicked ? "Logging out..." : "Logout"}
+                Manage
+              </Button>
+            </Box>
+            <Divider sx={{ my: 1, backgroundColor: "#444444" }} />
+
+            {/* Export Data */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography sx={{ color: "#FFFFFF" }}>Export data</Typography>
+              <Button
+                variant="outlined"
+                sx={{
+                  backgroundColor: "#2F2F2F",
+                  color: "#FFFFFF",
+                  borderRadius: "50px",
+                  border: "1px solid #444444",
+                  "&:hover": {
+                    backgroundColor: "#444444",
+                  },
+                }}
+              >
+                Export
+              </Button>
+            </Box>
+            <Divider sx={{ my: 1, backgroundColor: "#444444" }} />
+
+            {/* Delete Account */}
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <Typography sx={{ color: "#FFFFFF" }}>Delete account</Typography>
+              <Button
+                variant="contained"
+                sx={{
+                  backgroundColor: "#EF4444",
+                  color: "#FFFFFF",
+                  borderRadius: "50px",
+                  "&:hover": {
+                    backgroundColor: "#D83F3F",
+                  },
+                }}
+              >
+              Delete
               </Button>
             </Box>
           </Box>
@@ -162,4 +160,4 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
   );
 };
 
-export default Settings;
+export default YourData;
