@@ -40,7 +40,7 @@ const ShareConversation = () => {
       </Box>
 
       {/* Messages */}
-      <Box sx={{ mx: -2, flexGrow: 1 }}>
+      <Box sx={{ mx: -2, flexGrow: 1, mb: '52px' }}>
         {
           messages && messages.map((msg, index) => (
             <Box

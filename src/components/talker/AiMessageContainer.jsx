@@ -45,7 +45,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef
   const [isAtBottom, setIsAtBottom] = useState(false);
 
   const scrollToBottom = () => {
-    if (chatContainerRef.current) {
+    if (chatContainerRef && chatContainerRef.current) {
       // Only scroll to bottom if user is at the bottom
       if (isAtBottom) {
         chatContainerRef.current.scrollTo({
@@ -58,7 +58,7 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef
 
   // Detect scroll position
   const handleScroll = () => {
-    if (chatContainerRef.current) {
+    if (chatContainerRef && chatContainerRef.current) {
       const isAtBottom = chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop === chatContainerRef.current.clientHeight;
       setIsAtBottom(isAtBottom); // Update state if user is at the bottom
     }
@@ -66,12 +66,12 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef
 
   useEffect(() => {
     // Attach scroll event listener
-    if (chatContainerRef.current) {
+    if (chatContainerRef && chatContainerRef.current) {
       chatContainerRef.current.addEventListener('scroll', handleScroll);
     }
 
     return () => {
-      if (chatContainerRef.current) {
+      if (chatContainerRef && chatContainerRef.current) {
         chatContainerRef.current.removeEventListener('scroll', handleScroll);
       }
     };

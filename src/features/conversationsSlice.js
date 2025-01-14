@@ -62,21 +62,21 @@ export const delConversationFromSupabase = createAsyncThunk(
 // Async thunk for fetching conversation & related messages from Supabase
 export const fetchConversationWithMessages = createAsyncThunk(
   "conversation/fetchWithMessages",
-  async (conversationId) => {
-    const { data, error } = await supabase
-      .from("conversations")
-      .select(`*, messages(*)`) // Fetch related messages using Supabase's relational syntax
-      .eq("conversation_id", conversationId);
+  async (conversationId, { rejectWithValue }) => {
+    try {
+      // Perform the operation in supabase
+      const { data, error } = await supabase
+        .from("conversations")
+        .select(`*, messages(*)`) // Fetch related messages using Supabase's relational syntax
+        .eq("conversation_id", conversationId);
+      if (error) {
+        throw error;
+      }
 
-    if (error) {
-      throw new Error(error.message);
+      return data[0]; // Return the conversation with messages
+    } catch (error) {
+      return rejectWithValue(error.message);
     }
-
-    if (data.length === 0) {
-      throw new Error("Conversation not found");
-    }
-
-    return data[0]; // Assuming the conversation ID is unique
   }
 );
 
@@ -232,12 +232,13 @@ const conversationsSlice = createSlice({
         state.status = "loading";
       })
       .addCase(fetchConversationWithMessages.fulfilled, (state, action) => {
-        state.conversations = action.payload;
         state.status = "succeeded";
+        state.conversation = action.payload;
+        state.messages = action.payload.messages;
       })
       .addCase(fetchConversationWithMessages.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.error.message;
+        state.error = action.payload || action.error.message;
       });
   },
 });
@@ -249,7 +250,7 @@ export const {
   setActiveIndex,
   delConversation,
   renConversation,
-  delAllChats
+  delAllChats,
 } = conversationsSlice.actions;
 
 export default conversationsSlice.reducer;
