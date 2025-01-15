@@ -122,7 +122,7 @@ const SharedLinks = ({
                   justifyContent: "flex-end",
                 }}
               >
-                <IconButton sx={{ color: "#B4B4B4" }}>
+                <IconButton sx={{ color: "#B4B4B4", p: '4px' }}>
                   <MoreVertIcon />
                 </IconButton>
               </Box>
