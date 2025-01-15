@@ -4,30 +4,25 @@ import {
   Divider,
   Backdrop,
   IconButton,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
   Button,
   Typography,
-  Popover,
-  ListItemText,
-  ListItemIcon,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import SharedLinks from "./SharedLinks";
 
 const YourData = ({ yourDataOpened, setYourDataOpened }) => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+const [openSharedLinks, setOpenSharedLinks] = useState(false); // State to control dialog visibility of sharedLinks
 
+const handleOpenSharedLinksDialog = () => {
+setYourDataOpened(false);
+setOpenSharedLinks(true);
+};
   return (
     <>
       {/* Backdrop */}
-      {yourDataOpened && (
+      {(yourDataOpened || openSharedLinks) && (
         <Backdrop
-          open={yourDataOpened}
+          open={yourDataOpened || openSharedLinks}
           sx={{
             zIndex: 9999, // Ensure the backdrop is behind the settings dialog but above other UI elements
             bgcolor: "rgba(5, 5, 5, 0.7)", // Semi-transparent black background
@@ -46,7 +41,8 @@ const YourData = ({ yourDataOpened, setYourDataOpened }) => {
             backgroundColor: "#2F2F2F",
             padding: 2,
             borderRadius: "16px",
-            width: "90%",
+            width: 'calc(100% - 16px)',
+            marginRight: '8px',
             maxWidth: "600px",
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
             zIndex: 10000,
@@ -87,7 +83,7 @@ const YourData = ({ yourDataOpened, setYourDataOpened }) => {
               <Typography sx={{ color: "#FFFFFF" }}>
               Shared links
               </Typography>
-              <Button
+              <Button onClick={handleOpenSharedLinksDialog}
                 variant="outlined"
                 sx={{
                   backgroundColor: "#2F2F2F",
@@ -156,6 +152,9 @@ const YourData = ({ yourDataOpened, setYourDataOpened }) => {
           </Box>
         </Box>
       )}
+
+      {/* Rendering of yourDataMenu components */}
+    <SharedLinks openSharedLinks={openSharedLinks} setOpenSharedLinks={setOpenSharedLinks} setYourDataOpened={setYourDataOpened} />
     </>
   );
 };

@@ -97,8 +97,9 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
             backgroundColor: "#2F2F2F",
             padding: 2,
             borderRadius: "16px",
-            width: "90%",
             maxWidth: "600px",
+            width: 'calc(100% - 16px)',
+            marginRight: '8px',
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
             zIndex: 10000,
           }}
@@ -196,8 +197,9 @@ const Settings = ({ settingsOpened, setSettingsOpened }) => {
             backgroundColor: "#2F2F2F",
             padding: 2,
             borderRadius: "16px",
-            width: "90%",
             maxWidth: "600px",
+            width: 'calc(100% - 16px)',
+            marginRight: '8px',
             boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
             zIndex: 10000,
           }}
