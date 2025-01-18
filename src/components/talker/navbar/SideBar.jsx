@@ -48,6 +48,9 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import Settings from "../Settings";
 import systemTheme from "../../../scripts/muiTheme";
 import YourData from "../YourData";
+import {
+  storeSharedLinkInSupabase,
+} from "../../../features/sharedLinksSlice";
 
 const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
   const [user, setUser] = useState(null);
@@ -272,6 +275,16 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
     }, 700);
   };
 
+  const handleSharedLinkManaging = () => {
+    // store sharedLink in supabase
+    dispatch(
+      storeSharedLinkInSupabase({
+        userId: user.uid,
+        title: activeConversationTitle,
+        convoId: activeConversationId,
+      })
+    );
+  };
   return (
     <>
       <Drawer anchor="left" open={isOpen} onClose={handleConBar}>
@@ -390,7 +403,12 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
             }}
           >
             <List sx={{ width: 125, bgcolor: "#2F2F2F" }}>
-              <ListItem onClick={handleOpenShareDialog}>
+              <ListItem
+                onClick={() => {
+                  handleOpenShareDialog();
+                  handleSharedLinkManaging();
+                }}
+              >
                 <Share
                   fontSize="small"
                   sx={{ color: "white", marginRight: "10px" }}
@@ -595,8 +613,8 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                 onClick={handleOpenYourData}
                 button
                 sx={{
-                  px: "16px",
                   pt: "8px",
+                  mt: "3px",
                   pb: "4px",
                   borderRadius: "9px",
                   ":hover": {
@@ -700,6 +718,7 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
                     bgcolor: systemTheme.palette.customColors.hoverColor,
                   },
                   borderRadius: "9px",
+                  my: "3px",
                 }}
                 button
               >

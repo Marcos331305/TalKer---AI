@@ -1,26 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Divider, IconButton, Button, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChatIcon from "@mui/icons-material/Chat";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch, useSelector } from "react-redux";
+import { getAuth } from "firebase/auth";
+import { fetchSharedLinksFromSupabase } from "../../features/sharedLinksSlice";
 
 const SharedLinks = ({
   setYourDataOpened,
   openSharedLinks,
   setOpenSharedLinks,
 }) => {
+  const dispatch = useDispatch();
+  const auth = getAuth();
+  const user_id = auth.currentUser.uid;
+  // Access sharedLinks state's from Redux Store
+  const { sharedLinks, loading, error } = useSelector(
+    (state) => state.sharedLinks
+  );
+
+  // Fetch shared links when the dialog opens
+  useEffect(() => {
+    if (openSharedLinks) {
+      dispatch(fetchSharedLinksFromSupabase({ userId: user_id }));
+    }
+  }, [openSharedLinks, dispatch]);
+
   const handleCloseDialog = () => {
     setOpenSharedLinks(false);
     setYourDataOpened(true);
   };
-  const sharedLinks = [
-    {
-      id: 1,
-      name: "web development process in brief for beginners",
-      dateShared: "January 14, 2025"
-    }
-  ];
   return (
     <>
       {/* SharedLinks Dialog */}
@@ -62,132 +73,171 @@ const SharedLinks = ({
           {/* Divider */}
           <Divider sx={{ backgroundColor: "#444444", marginY: 1 }} />
 
-          {/* Table Layout */}
-          <Box
-            sx={{
-              maxHeight: "calc(10 * 48px)", // Approx. 10 rows height
-              overflowY: "auto",
-              padding: 1,
-              maxHeight: "calc(10 * 48px)", // Approx. 10 rows height (row height ~48px)
-              backgroundColor: "#1E1E1E",
-              borderRadius: "8px",
-              "&::-webkit-scrollbar": {
-                width: "4px",
-              },
-              "&::-webkit-scrollbar-thumb": {
-                backgroundColor: "#676767", // Custom scrollbar thumb color
-                borderRadius: "4px",
-              },
-              "&::-webkit-scrollbar-track": {
-                background: "none", // Removes scrollbar track
-              },
-            }}
-          >
-            {/* Headings Row */}
+          {/* loadingText */}
+          {loading && (
+            <Typography sx={{ color: "#B4B4B4", fontSize: "16px" }}>
+              Loading...
+            </Typography>
+          )}
+
+          {/* sharedLinks Table */}
+          {!loading && !error && sharedLinks.length > 0 && (
+            <Box
+              sx={{
+                maxHeight: "calc(10 * 48px)", // Approx. 10 rows height
+                overflowY: "auto",
+                padding: 1,
+                maxHeight: "calc(10 * 48px)", // Approx. 10 rows height (row height ~48px)
+                backgroundColor: "#1E1E1E",
+                borderRadius: "8px",
+                "&::-webkit-scrollbar": {
+                  width: "4px",
+                },
+                "&::-webkit-scrollbar-thumb": {
+                  backgroundColor: "#676767", // Custom scrollbar thumb color
+                  borderRadius: "4px",
+                },
+                "&::-webkit-scrollbar-track": {
+                  background: "none", // Removes scrollbar track
+                },
+              }}
+            >
+              {/* Headings Row */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "8px 16px",
+                  position: "sticky",
+                  top: -8.00999,
+                  backgroundColor: "#2F2F2F",
+                  zIndex: 1,
+                  borderRadius: "8px",
+                }}
+              >
+                <Typography sx={{ flex: 1, color: "#F9F9F9", fontWeight: 500 }}>
+                  Name
+                </Typography>
+                <Typography
+                  sx={{
+                    flex: 1,
+                    textAlign: "center",
+                    color: "#F9F9F9",
+                    fontWeight: 500,
+                    lineHeight: "20px",
+                    // ml: 2.7,
+                    // "@media (min-width: 768px)": {
+                    //   ml: 0,
+                    // },
+                  }}
+                >
+                  Date Shared
+                </Typography>
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  <IconButton sx={{ color: "#F9F9F9", p: "4px" }}>
+                    <MoreVertIcon />
+                  </IconButton>
+                </Box>
+              </Box>
+
+              {/* Render Rows */}
+              {sharedLinks.map((link, index) => (
+                <React.Fragment key={link?.link_id || index}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      padding: "8px 16px",
+                    }}
+                  >
+                    {/* Name */}
+                    <Typography
+                      sx={{
+                        flex: 1,
+                        color: "#3A88FF",
+                        textDecoration: "underline",
+                        lineHeight: "20px",
+                        "@media (max-width: 600px)": {
+                          pr: 1,
+                        },
+                        textDecorationThickness: "1px",
+                        textUnderlineOffset: "2px",
+                        ":hover": { cursor: "pointer" },
+                      }}
+                    >
+                      {link?.clickable_name}
+                    </Typography>
+                    {/* Date Shared */}
+                    <Typography
+                      sx={{
+                        flex: 1,
+                        textAlign: "center",
+                        color: "#F9F9F9",
+                        lineHeight: "20px",
+                        // ml: 1,
+                        // "@media (min-width: 768px)": {
+                        //   ml: 0,
+                        // },
+                      }}
+                    >
+                      {link?.shared_date}
+                    </Typography>
+                    {/* Actions */}
+                    <Box
+                      sx={{
+                        flex: 1,
+                        display: "flex",
+                        justifyContent: "flex-end",
+                        alignItems: "center",
+                      }}
+                    >
+                      <IconButton
+                        sx={{ color: "#B4B4B4", p: "4px", pt: "7px" }}
+                      >
+                        <ChatIcon />
+                      </IconButton>
+                      <IconButton sx={{ color: "#B4B4B4", p: "4px" }}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Box>
+                  {/* No Divider After Last Row */}
+                  {index < sharedLinks.length - 1 && (
+                    <Divider sx={{ backgroundColor: "#444444", marginX: 2 }} />
+                  )}
+                </React.Fragment>
+              ))}
+            </Box>
+          )}
+          {/* No Shared Links */}
+          {!loading && !error && sharedLinks.length === 0 && (
             <Box
               sx={{
                 display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                padding: "8px 16px",
-                position: "sticky",
-                top: -8.00999,
-                backgroundColor: "#2F2F2F",
-                zIndex: 1,
-                borderRadius: "8px",
+                justifyContent: "flex-start",
               }}
             >
-              <Typography sx={{ flex: 1, color: "#F9F9F9", fontWeight: 500 }}>
-                Name
-              </Typography>
               <Typography
                 sx={{
-                  flex: 1,
+                  color: "#B4B4B4",
                   textAlign: "center",
-                  color: "#F9F9F9",
-                  fontWeight: 500,
-                  lineHeight: "20px",
-                  // ml: 2.7,
-                  // "@media (min-width: 768px)": {
-                  //   ml: 0,
-                  // },
+                  marginTop: "16px",
+                  paddingBottom: "32px",
+                  fontSize: "16px",
                 }}
               >
-                Date Shared
+                You have no shared links.
               </Typography>
-              <Box
-                sx={{
-                  flex: 1,
-                  display: "flex",
-                  justifyContent: "flex-end",
-                }}
-              >
-                <IconButton sx={{ color: "#B4B4B4", p: '4px' }}>
-                  <MoreVertIcon />
-                </IconButton>
-              </Box>
             </Box>
-
-            {/* Render Rows */}
-            {sharedLinks.map((link, index) => (
-              <React.Fragment key={link.id}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: "8px 16px",
-                  }}
-                >
-                  {/* Name */}
-                  <Typography
-                    sx={{ flex: 1, color: "#F9F9F9", lineHeight: "20px", 
-                      "@media (max-width: 600px)": {
-                        pr: 1,
-                      },
-                     }}
-                  >
-                    {link.name}
-                  </Typography>
-                  {/* Date Shared */}
-                  <Typography
-                    sx={{
-                      flex: 1,
-                      textAlign: "center",
-                      color: "#F9F9F9",
-                      lineHeight: "20px",
-                      // ml: 1,
-                      // "@media (min-width: 768px)": {
-                      //   ml: 0,
-                      // },
-                    }}
-                  >
-                    {link.dateShared}
-                  </Typography>
-                  {/* Actions */}
-                  <Box
-                    sx={{
-                      flex: 1,
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      alignItems: "center",
-                    }}
-                  >
-                    <IconButton sx={{ color: "#B4B4B4", p: '4px', pt: '7px'  }}>
-                      <ChatIcon />
-                    </IconButton>
-                    <IconButton sx={{ color: "#B4B4B4", p: '4px' }}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Box>
-                </Box>
-                {/* No Divider After Last Row */}
-                {index < sharedLinks.length - 1 && (
-                  <Divider sx={{ backgroundColor: "#444444", marginX: 2 }} />
-                )}
-              </React.Fragment>
-            ))}
-          </Box>
+          )}
         </Box>
       )}
     </>

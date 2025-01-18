@@ -4,7 +4,6 @@ import {
   isYesterday,
   isThisWeek,
   isThisMonth,
-  startOfMonth,
 } from "date-fns";
 
 // function for generating uniqueId's
