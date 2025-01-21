@@ -32,6 +32,11 @@ const SharedLinks = ({
     setOpenSharedLinks(false);
     setYourDataOpened(true);
   };
+
+  const handleLinkClick = (linkId) => {
+    window.open(`/talker/share/${linkId}`, '_blank');
+  };
+
   return (
     <>
       {/* SharedLinks Dialog */}
@@ -172,6 +177,7 @@ const SharedLinks = ({
                         textUnderlineOffset: "2px",
                         ":hover": { cursor: "pointer" },
                       }}
+                      onClick={() => handleLinkClick(link.conversation_id)}
                     >
                       {link?.clickable_name}
                     </Typography>
