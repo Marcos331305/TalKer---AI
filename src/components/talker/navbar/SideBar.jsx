@@ -49,8 +49,11 @@ import Settings from "../Settings";
 import systemTheme from "../../../scripts/muiTheme";
 import YourData from "../YourData";
 import {
+  addSharedLink,
   storeSharedLinkInSupabase,
 } from "../../../features/sharedLinksSlice";
+import { customAlphabet } from "nanoid";
+import { format } from "date-fns";
 
 const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
   const [user, setUser] = useState(null);
@@ -276,15 +279,35 @@ const SideBar = ({ isOpen, handleConBar, setShowScrollButton }) => {
   };
 
   const handleSharedLinkManaging = () => {
+    // Define the alphabet to use (e.g., alphanumeric characters)
+    const alphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // Create a nanoid generator with a fixed size of 4
+    const generateToken = customAlphabet(alphabet, 4);
+    const linkToken = generateToken();
+    // getting the sharedDate in desired format
+    const currentDate = new Date();
+    const formattedDate = format(currentDate, "MMMM dd, yyyy");
+    // store sharedLink in reduxState for immediate UI update
+    dispatch(
+      addSharedLink({
+        link_id_token: linkToken,
+        clickable_name: activeConversationTitle,
+        conversation_id: activeConversationId,
+        shared_date: formattedDate,
+      })
+    );
     // store sharedLink in supabase
     dispatch(
       storeSharedLinkInSupabase({
+        link_token: linkToken,
         userId: user.uid,
         title: activeConversationTitle,
         convoId: activeConversationId,
       })
     );
   };
+
   return (
     <>
       <Drawer anchor="left" open={isOpen} onClose={handleConBar}>

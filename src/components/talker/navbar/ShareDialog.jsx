@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -15,12 +15,22 @@ import { ContentCopy, Close } from '@mui/icons-material';
 import WhatsApp from '@mui/icons-material/WhatsApp';
 import LinkedIn from '@mui/icons-material/LinkedIn';
 import { FaTelegramPlane, FaRedditSquare } from 'react-icons/fa';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { currentlySharedLinkToken } from '../../../features/sharedLinksSlice';
 
 const ShareDialog = ({ open, handleClose }) => {
+    const dispatch = useDispatch();
     const [copied, setCopied] = useState(false);
     const conversationId = useSelector((state) => state.conversations.activeConversationId);
-    const sharingLink = `https://talkerai.netlify.app/talker/share/${conversationId}`; // Example link
+    const linkToken = useSelector((state) => state.sharedLinks.sharedLinkToken);
+    const sharingLink = `localhost:5173/talker/share/${conversationId}/${linkToken}`; // Example link
+
+    // getting the currently shared link's Token when the dialog opens
+    useEffect(() => {
+    if(conversationId && open){
+        dispatch(currentlySharedLinkToken({ conversationId }));
+    }
+    }, [conversationId, open, dispatch])
 
     const handleCopyLink = (sharingLink) => {
         setCopied(true);

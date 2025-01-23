@@ -3,20 +3,15 @@ import {
   List,
   ListItem,
   ListItemText,
-  Avatar,
   Box,
   Popover,
-  Divider,
   Toolbar,
   IconButton,
   Typography,
 } from "@mui/material";
-import { useMediaQuery } from "@mui/material";
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import LogoutIcon from "@mui/icons-material/Logout";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuthState } from "../../features/authSlice";
 import { useState, useEffect } from "react";
 import MenuOpenIcon from "@mui/icons-material/MenuOpen";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
@@ -24,7 +19,6 @@ import {
   clearActiveConversationId,
   delConversation,
   delConversationFromSupabase,
-  fetchConversations,
   renConversation,
   setActiveConversationId,
   setActiveIndex,
@@ -39,16 +33,19 @@ import { toast } from "react-toastify";
 import { groupConversationsByTime } from "../../scripts/app";
 import ConversationsArea from "./navbar/ConversationsArea";
 import systemTheme from "../../scripts/muiTheme";
-import { storeSharedLinkInSupabase } from "../../features/sharedLinksSlice";
+import {
+  addSharedLink,
+  storeSharedLinkInSupabase,
+} from "../../features/sharedLinksSlice";
+import { customAlphabet } from "nanoid";
+import { format } from "date-fns";
 
 const SideBarForDrawer = ({
   setShowScrollButton,
   handleDrawerClose,
   setIsNavigating,
 }) => {
-  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [clicked, setClicked] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [activeConversationTitle, setActiveConversationTitle] = useState("");
@@ -56,7 +53,6 @@ const SideBarForDrawer = ({
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false); // for shareOption
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false); // for deleteOption
-  const [anchorEl, setAnchorEl] = useState(null); // for userMenu
   const [anchorElMore, setAnchorElMore] = useState(null); // for moreIcon
   const activeConversationId = useSelector(
     (state) => state.conversations.activeConversationId
@@ -92,22 +88,16 @@ const SideBarForDrawer = ({
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // current user Conversations on the appLoad
-        dispatch(fetchConversations(user.uid));
         // User is signed in
         setUser(user);
       } else {
         // User is signed out
         setUser(null);
       }
-      setLoading(false);
     });
 
     return () => unsubscribe(); // Clean up subscription on unmount
   }, []);
-
-  // Check if screen size is medium or larger
-  const isMdUp = useMediaQuery((theme) => theme.breakpoints.up("md"));
 
   const handleItemClick = (index, convoId) => {
     // Check if the clicked conversation is already the active one
@@ -124,30 +114,6 @@ const SideBarForDrawer = ({
       // Finally, navigate to the selected conversation route
       navigate(`/talker/c/${convoId}`);
     }
-  };
-
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const open = Boolean(anchorEl);
-
-  // handle logOut
-  const handleLogOut = () => {
-    setClicked(true);
-    const auth = getAuth();
-    // firebase logOut functionality
-    setTimeout(async () => {
-      await signOut(auth);
-      dispatch(setAuthState()); // set the userAuthenticated state to false first that have using in authSlice
-      dispatch(clearActiveConversationId());
-      dispatch(clearMessages());
-      navigate("/"); // Redirect the user to Home-Page(loginPage)
-    }, 1000); // Duration of the logOut process
   };
 
   const handleNewConversation = () => {
@@ -254,8 +220,28 @@ const SideBarForDrawer = ({
     setRenameDialogOpen(false);
   };
   const handleSharedLinkManaging = () => {
+    // Define the alphabet to use (e.g., alphanumeric characters)
+    const alphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // Create a nanoid generator with a fixed size of 4
+    const generateToken = customAlphabet(alphabet, 4);
+    const linkToken = generateToken();
+    // getting the sharedDate in desired format
+    const currentDate = new Date();
+    const formattedDate = format(currentDate, "MMMM dd, yyyy");
+    // store sharedLink in reduxState for immediate UI update
+    dispatch(
+      addSharedLink({
+        link_id_token: linkToken,
+        clickable_name: activeConversationTitle,
+        conversation_id: activeConversationId,
+        shared_date: formattedDate,
+      })
+    );
+    // store sharedLink in supabase
     dispatch(
       storeSharedLinkInSupabase({
+        link_token: linkToken,
         userId: user.uid,
         title: activeConversationTitle,
         convoId: activeConversationId,
@@ -411,8 +397,8 @@ const SideBarForDrawer = ({
           >
             <ListItem
               onClick={() => {
-                handleOpenShareDialog()
-                handleSharedLinkManaging()
+                handleOpenShareDialog();
+                handleSharedLinkManaging();
               }}
               sx={{
                 cursor: "pointer",
@@ -519,64 +505,6 @@ const SideBarForDrawer = ({
           handleEditableTitle={handleEditableTitle}
           setActiveConversationTitle={setActiveConversationTitle}
         />
-
-        {/* menuOfUserAccount */}
-        <Popover
-          open={open}
-          anchorEl={anchorEl}
-          onClose={handleClose}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
-          transformOrigin={{
-            vertical: "bottom",
-            horizontal: "left",
-          }}
-        >
-          <List
-            sx={{ width: 240, bgcolor: "#2F2F2F", border: "1px solid #444343" }}
-          >
-            {/* Email at the top */}
-            <ListItem>
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "white",
-                  py: "8px",
-                  px: "2px",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                  display: "block",
-                }}
-              >
-                {user && user.email}
-              </Typography>
-            </ListItem>
-
-            <Divider sx={{ bgcolor: "#444343" }} />
-
-            {/* Logout option */}
-            <ListItem
-              sx={{
-                transform: clicked ? "scale(0.95)" : "scale(1)",
-                transition: "transform 0.1s ease",
-                "&:hover": {
-                  backgroundColor: "#444",
-                },
-              }}
-              button
-              onClick={handleLogOut}
-            >
-              <LogoutIcon sx={{ color: "white", marginRight: 1 }} />
-              <ListItemText
-                primary={clicked ? "Logging out..." : "Logout"}
-                sx={{ color: "white" }}
-              />
-            </ListItem>
-          </List>
-        </Popover>
       </Box>
     </>
   );

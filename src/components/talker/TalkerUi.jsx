@@ -4,7 +4,7 @@ import MsgInput from './MsgInput'
 import ChatArea from './ChatArea'
 import { Box } from '@mui/material'
 import { useRef } from 'react'
-import { useMediaQuery, useTheme } from '@mui/material';
+import { useMediaQuery } from '@mui/material';
 import UiWithDrawer from './UiWithDrawer'
 
 const TalkerUi = () => {
@@ -14,7 +14,6 @@ const TalkerUi = () => {
   const [isNavigating, setIsNavigating] = useState(false);
   const [showScrollButton, setShowScrollButton] = useState(false);
 
-  const theme = useTheme();
   const is768pxOrLarger = useMediaQuery('(min-width:768px)'); // Check if the screen width is 768px or Larger
   return (
     <Box sx={{

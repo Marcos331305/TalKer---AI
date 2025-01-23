@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -15,7 +15,6 @@ import SideBarForDrawer from "./SideBarForDrawer";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import {
   clearActiveConversationId,
-  fetchConversations,
   setActiveIndex,
 } from "../../features/conversationsSlice.js";
 import { clearMessages } from "../../features/messageSlice.js";
@@ -104,7 +103,6 @@ export default function UiWithDrawer({
   messageInputRef,
   chatContainerRef,
 }) {
-  const theme = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
@@ -124,8 +122,6 @@ export default function UiWithDrawer({
     const auth = getAuth();
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        // current user Conversations on the appLoad
-        dispatch(fetchConversations(user.uid));
         // User is signed in
         setUser(user);
       } else {

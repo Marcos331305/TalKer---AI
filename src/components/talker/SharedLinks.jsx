@@ -1,13 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Box, Divider, IconButton, Button, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChatIcon from "@mui/icons-material/Chat";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { getAuth } from "firebase/auth";
-import { fetchSharedLinksFromSupabase } from "../../features/sharedLinksSlice";
-import { setActiveConversationId } from "../../features/conversationsSlice";
+import { delSharedLink, delSharedLinkFromSupabase } from "../../features/sharedLinksSlice";
 
 const SharedLinks = ({
   setYourDataOpened,
@@ -15,19 +13,10 @@ const SharedLinks = ({
   setOpenSharedLinks,
 }) => {
   const dispatch = useDispatch();
-  const auth = getAuth();
-  const user_id = auth.currentUser.uid;
   // Access sharedLinks state's from Redux Store
   const { sharedLinks, loading, error } = useSelector(
     (state) => state.sharedLinks
   );
-
-  // Fetch shared links when the dialog opens
-  useEffect(() => {
-    if (openSharedLinks) {
-      dispatch(fetchSharedLinksFromSupabase({ userId: user_id }));
-    }
-  }, [openSharedLinks, dispatch]);
 
   const handleCloseDialog = () => {
     setOpenSharedLinks(false);
@@ -40,6 +29,13 @@ const SharedLinks = ({
 
   const handleSourceChatClick = (conversationId) => {
     window.open(`/talker/c/${conversationId}`, '_blank');
+  };
+
+  const handleDeleteSharedLink = (link_id) => {
+    // Delete the shared link from reduxState for immediate UI update
+    dispatch(delSharedLink({ link_id }));
+    // Delete the shared link from the supabaase
+    dispatch(delSharedLinkFromSupabase(link_id));
   };
 
   return (
@@ -159,7 +155,7 @@ const SharedLinks = ({
 
               {/* Render Rows */}
               {sharedLinks.map((link, index) => (
-                <React.Fragment key={link?.link_id || index}>
+                <React.Fragment key={link?.link_id_token || index}>
                   <Box
                     sx={{
                       display: "flex",
@@ -216,7 +212,7 @@ const SharedLinks = ({
                       >
                         <ChatIcon />
                       </IconButton>
-                      <IconButton sx={{ color: "#B4B4B4", p: "4px" }}>
+                      <IconButton sx={{ color: "#B4B4B4", p: "4px" }} onClick={() => handleDeleteSharedLink(link.link_id_token)}>
                         <DeleteIcon />
                       </IconButton>
                     </Box>

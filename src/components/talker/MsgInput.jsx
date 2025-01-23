@@ -14,6 +14,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import systemTheme from '../../scripts/muiTheme';
 import { StateContext } from '../../main';
+import { fetchSharedLinksFromSupabase } from '../../features/sharedLinksSlice';
 
 const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating }) => {
   // StateContext for stopGeneratingResponseButton
@@ -39,10 +40,13 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   // Get the current user
   const user = auth.currentUser;
 
-  // fetch conversation when the component Mounts
+  // fetch conversation when the app Loads
   useEffect(() => {
-    // Fetch conversations when the component mounts
+    // Fetch conversations on the app Level
     dispatch(fetchConversations(user.uid));
+
+    // Fetch sharedLink on the app Level
+    dispatch(fetchSharedLinksFromSupabase({ userId: user.uid }));
 
     // Check if this is the first app load
     const isFirstLoad = sessionStorage.getItem('isFirstLoad') === null;
