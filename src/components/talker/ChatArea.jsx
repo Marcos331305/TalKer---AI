@@ -7,6 +7,7 @@ import { useParams } from 'react-router-dom'
 import { fetchMessages } from '../../features/messageSlice'
 import { Helmet } from 'react-helmet-async'
 import { StateContext } from '../../main'
+import { setActiveConversationId } from '../../features/conversationsSlice'
 
 const ChatArea = ({ chatContainerRef }) => {
     const { isTypingEffectFinished, setIsTypingEffectFinished } = useContext(StateContext)
@@ -21,6 +22,7 @@ const ChatArea = ({ chatContainerRef }) => {
     // Fetching messages based on conversationId
     useEffect(() => {
         if (conversationId) {
+            dispatch(setActiveConversationId(conversationId));
             dispatch(fetchMessages(conversationId));
         }
     }, []);

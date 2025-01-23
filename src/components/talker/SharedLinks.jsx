@@ -7,6 +7,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { getAuth } from "firebase/auth";
 import { fetchSharedLinksFromSupabase } from "../../features/sharedLinksSlice";
+import { setActiveConversationId } from "../../features/conversationsSlice";
 
 const SharedLinks = ({
   setYourDataOpened,
@@ -35,6 +36,10 @@ const SharedLinks = ({
 
   const handleLinkClick = (linkId) => {
     window.open(`/talker/share/${linkId}`, '_blank');
+  };
+
+  const handleSourceChatClick = (conversationId) => {
+    window.open(`/talker/c/${conversationId}`, '_blank');
   };
 
   return (
@@ -207,6 +212,7 @@ const SharedLinks = ({
                     >
                       <IconButton
                         sx={{ color: "#B4B4B4", p: "4px", pt: "7px" }}
+                        onClick={() => handleSourceChatClick(link.conversation_id)}
                       >
                         <ChatIcon />
                       </IconButton>

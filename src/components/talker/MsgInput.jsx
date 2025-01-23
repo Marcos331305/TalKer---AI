@@ -52,15 +52,15 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       sessionStorage.setItem('isFirstLoad', 'false');
       dispatch(setActiveConversationId(null));
     } else {
-      // Retrieve stored active conversation from localStorage for subsequent loads
-      const storedData = localStorage.getItem('activeConversationId');
+      // Retrieve stored active conversation from sessionStorage for subsequent loads
+      const storedData = sessionStorage.getItem('activeConversationId');
 
       if (storedData) {
         try {
           const activeConversationId = JSON.parse(storedData);
           dispatch(setActiveConversationId(activeConversationId));
         } catch (error) {
-          console.error("Error parsing activeConversationId from localStorage:", error);
+          console.error("Error parsing activeConversationId from sessionStorage:", error);
         }
       }
     }

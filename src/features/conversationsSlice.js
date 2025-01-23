@@ -164,13 +164,13 @@ const conversationsSlice = createSlice({
     },
     setActiveConversationId(state, action) {
       state.activeConversationId = action.payload;
-      localStorage.setItem(
+      sessionStorage.setItem(
         "activeConversationId",
         JSON.stringify(action.payload)
       );
     },
     clearActiveConversationId(state) {
-      localStorage.setItem("activeConversationId", JSON.stringify(null));
+      sessionStorage.setItem("activeConversationId", JSON.stringify(null));
       state.activeConversationId = null;
     },
     setActiveIndex: (state, action) => {
