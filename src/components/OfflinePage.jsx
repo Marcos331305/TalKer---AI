@@ -10,7 +10,7 @@ const OfflinePage = () => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        minHeight: '100vh',
+        minHeight: '100dvh',
         backgroundColor: '#202124',
         padding: 2,
       }}

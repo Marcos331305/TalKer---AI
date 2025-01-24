@@ -37,6 +37,9 @@ import ShareDialog from "./navbar/ShareDialog.jsx";
 import Settings from "./Settings.jsx";
 import systemTheme from "../../scripts/muiTheme.js";
 import YourData from "./YourData.jsx";
+import { format } from "date-fns";
+import { customAlphabet } from "nanoid";
+import { addSharedLink, storeSharedLinkInSupabase } from "../../features/sharedLinksSlice.js";
 
 const drawerWidth = 260;
 
@@ -113,6 +116,7 @@ export default function UiWithDrawer({
   const [settingsOpened, setSettingsOpened] = useState(false);
   const [yourDataOpened, setYourDataOpened] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false); // for shareOption
+  const [activeConversationTitle, setActiveConversationTitle] = useState("");
   const activeConversationId = useSelector(
     (state) => state.conversations.activeConversationId
   );
@@ -186,6 +190,36 @@ export default function UiWithDrawer({
     setYourDataOpened(true);
   };
 
+  const handleSharedLinkManaging = () => {
+    // Define the alphabet to use (e.g., alphanumeric characters)
+    const alphabet =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    // Create a nanoid generator with a fixed size of 4
+    const generateToken = customAlphabet(alphabet, 4);
+    const linkToken = generateToken();
+    // getting the sharedDate in desired format
+    const currentDate = new Date();
+    const formattedDate = format(currentDate, "MMMM dd, yyyy");
+    // store sharedLink in reduxState for immediate UI update
+    dispatch(
+      addSharedLink({
+        link_id_token: linkToken,
+        clickable_name: activeConversationTitle,
+        conversation_id: activeConversationId,
+        shared_date: formattedDate,
+      })
+    );
+    // store sharedLink in supabase
+    dispatch(
+      storeSharedLinkInSupabase({
+        link_token: linkToken,
+        userId: user.uid,
+        title: activeConversationTitle,
+        convoId: activeConversationId,
+      })
+    );
+  };
+
   return (
     <>
       <Box sx={{ display: "flex", height: "100vh", width: "100% !important" }}>
@@ -245,7 +279,10 @@ export default function UiWithDrawer({
               {activeConversationId !== null && (
                 <Box>
                   <Button
-                    onClick={handleOpenShareDialog}
+                    onClick={()=>{
+                      handleOpenShareDialog();
+                      handleSharedLinkManaging();
+                    }}
                     variant="outlined"
                     sx={{
                       px: "14px",
@@ -362,6 +399,8 @@ export default function UiWithDrawer({
             handleDrawerClose={handleDrawerClose}
             setShowScrollButton={setShowScrollButton}
             setIsNavigating={setIsNavigating}
+            activeConversationTitle={activeConversationTitle}
+            setActiveConversationTitle={setActiveConversationTitle}
           />
         </Drawer>
         <Main

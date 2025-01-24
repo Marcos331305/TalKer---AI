@@ -44,11 +44,12 @@ const SideBarForDrawer = ({
   setShowScrollButton,
   handleDrawerClose,
   setIsNavigating,
+  activeConversationTitle,
+  setActiveConversationTitle
 }) => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [activeConversationTitle, setActiveConversationTitle] = useState("");
   const [selectedConversationId, setSelectedConversationId] = useState(null);
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false); // for shareOption

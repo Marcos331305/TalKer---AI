@@ -1,11 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Divider, IconButton, Button, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChatIcon from "@mui/icons-material/Chat";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { delSharedLink, delSharedLinkFromSupabase } from "../../features/sharedLinksSlice";
+import {
+  currentlySharedLinkToken,
+  delSharedLink,
+  delSharedLinkFromSupabase,
+} from "../../features/sharedLinksSlice";
 
 const SharedLinks = ({
   setYourDataOpened,
@@ -13,10 +17,21 @@ const SharedLinks = ({
   setOpenSharedLinks,
 }) => {
   const dispatch = useDispatch();
+  const [linkToOpen, setLinkToOpen] = useState(null);
   // Access sharedLinks state's from Redux Store
-  const { sharedLinks, loading, error } = useSelector(
+  const { sharedLinks, sharedLinkToken, loading, error } = useSelector(
     (state) => state.sharedLinks
   );
+
+  useEffect(() => {
+    if (sharedLinkToken && linkToOpen) {
+      window.open(
+        `/talker/share/${linkToOpen}/${sharedLinkToken}`,
+        "_blank"
+      );
+      setLinkToOpen(null); // Reset linkToOpen after opening the link
+    }
+  }, [sharedLinkToken, linkToOpen]);
 
   const handleCloseDialog = () => {
     setOpenSharedLinks(false);
@@ -24,11 +39,13 @@ const SharedLinks = ({
   };
 
   const handleLinkClick = (linkId) => {
-    window.open(`/talker/share/${linkId}`, '_blank');
+    setLinkToOpen(linkId);
+    // get the clicked link's linkToken
+    dispatch(currentlySharedLinkToken({ conversationId: linkId }));
   };
 
   const handleSourceChatClick = (conversationId) => {
-    window.open(`/talker/c/${conversationId}`, '_blank');
+    window.open(`/talker/c/${conversationId}`, "_blank");
   };
 
   const handleDeleteSharedLink = (link_id) => {
@@ -208,11 +225,18 @@ const SharedLinks = ({
                     >
                       <IconButton
                         sx={{ color: "#B4B4B4", p: "4px", pt: "7px" }}
-                        onClick={() => handleSourceChatClick(link.conversation_id)}
+                        onClick={() =>
+                          handleSourceChatClick(link.conversation_id)
+                        }
                       >
                         <ChatIcon />
                       </IconButton>
-                      <IconButton sx={{ color: "#B4B4B4", p: "4px" }} onClick={() => handleDeleteSharedLink(link.link_id_token)}>
+                      <IconButton
+                        sx={{ color: "#B4B4B4", p: "4px" }}
+                        onClick={() =>
+                          handleDeleteSharedLink(link.link_id_token)
+                        }
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </Box>

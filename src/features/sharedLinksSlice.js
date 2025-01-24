@@ -9,6 +9,29 @@ const initialState = {
   error: null,
 };
 
+export const validateSharedLink = createAsyncThunk(
+  "sharedLinks/validateSharedLink",
+  async (linkToken, { rejectWithValue }) => {
+    try {
+      // Validate linkToken with Supabase
+      const { data, error } = await supabase
+        .from('shared_links')
+        .select('*')
+        .eq('link_id_token', linkToken);
+
+      // Check for errors or empty results
+      if (error) {
+        throw new Error(error.message); // Handle Supabase errors
+      }
+      if (data.length === 0) {
+        throw new Error('Invalid link'); // Handle "no match" case
+      }
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 // Async thunk for fetching shared links
 export const fetchSharedLinksFromSupabase = createAsyncThunk(
   "sharedLinks/fetchSharedLinksFromSupabase",
@@ -151,6 +174,19 @@ export const sharedLinksSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
+      // validate sharedLink
+       .addCase(validateSharedLink.pending, (state) => {
+        state.loading = true; 
+        state.error = null; // Clear previous errors
+      })
+      .addCase(validateSharedLink.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null; // No errors on success
+      })
+      .addCase(validateSharedLink.rejected, (state, action) => {
+        state.loading = false; 
+        state.error = action.payload; 
+      });
   },
 });
 
