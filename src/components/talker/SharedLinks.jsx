@@ -1,5 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { Box, Divider, IconButton, Button, Typography } from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  Box,
+  Divider,
+  IconButton,
+  Button,
+  Typography,
+  Popover,
+  MenuItem,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ChatIcon from "@mui/icons-material/Chat";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -7,17 +15,25 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import {
   currentlySharedLinkToken,
+  delAllSharedLinks,
+  delAllSharedLinksFromSupabase,
   delSharedLink,
   delSharedLinkFromSupabase,
 } from "../../features/sharedLinksSlice";
+import { useTheme } from "@emotion/react";
+import { getAuth } from "firebase/auth";
 
 const SharedLinks = ({
   setYourDataOpened,
   openSharedLinks,
   setOpenSharedLinks,
 }) => {
+  const auth = getAuth();
+  const userId = auth.currentUser.uid;
+  const theme = useTheme();
   const dispatch = useDispatch();
   const [linkToOpen, setLinkToOpen] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
   // Access sharedLinks state's from Redux Store
   const { sharedLinks, sharedLinkToken, loading, error } = useSelector(
     (state) => state.sharedLinks
@@ -25,10 +41,7 @@ const SharedLinks = ({
 
   useEffect(() => {
     if (sharedLinkToken && linkToOpen) {
-      window.open(
-        `/talker/share/${linkToOpen}/${sharedLinkToken}`,
-        "_blank"
-      );
+      window.open(`/talker/share/${linkToOpen}/${sharedLinkToken}`, "_blank");
       setLinkToOpen(null); // Reset linkToOpen after opening the link
     }
   }, [sharedLinkToken, linkToOpen]);
@@ -53,6 +66,20 @@ const SharedLinks = ({
     dispatch(delSharedLink({ link_id }));
     // Delete the shared link from the supabaase
     dispatch(delSharedLinkFromSupabase(link_id));
+  };
+
+  const isPopoverOpen = Boolean(anchorEl);
+  const handleOpenPopover = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClosePopover = () => {
+    setAnchorEl(null);
+  };
+
+  const handleDeleteAllSharedLinks = () => {
+    dispatch(delAllSharedLinks());
+    dispatch(delAllSharedLinksFromSupabase(userId));
   };
 
   return (
@@ -164,7 +191,10 @@ const SharedLinks = ({
                     justifyContent: "flex-end",
                   }}
                 >
-                  <IconButton sx={{ color: "#F9F9F9", p: "4px" }}>
+                  <IconButton
+                    onClick={handleOpenPopover}
+                    sx={{ color: "#F9F9F9", p: "4px" }}
+                  >
                     <MoreVertIcon />
                   </IconButton>
                 </Box>
@@ -272,6 +302,60 @@ const SharedLinks = ({
           )}
         </Box>
       )}
+      {/* Delete all sharedLinks Popover */}
+      <Popover
+        open={isPopoverOpen}
+        anchorEl={anchorEl}
+        onClose={handleClosePopover}
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        sx={{
+          "& .MuiPaper-root": {
+            backgroundColor: "#2F2F2F",
+            borderRadius: "16px", // Rounded corners
+            border: "1px solid #4E4E4E", // Border styling
+            boxShadow: "none", // Remove default shadow
+          },
+          zIndex: 100000,
+        }}
+      >
+        {/* Menu Item Inside the Popover */}
+        <MenuItem 
+          onClick={()=>{
+            const userConfirmed = window.confirm('Are you sure you want to delete all your shared links?')
+            handleClosePopover()
+            if(userConfirmed){
+              handleDeleteAllSharedLinks()
+            }
+          }}
+          sx={{
+            color: '#F93A37',
+            fontSize: '14px',
+            borderRadius: "8px", // Rounded corners for the hover effect
+            padding: "8px 16px",
+            [theme.breakpoints.up("md")]: {
+              "&:hover": {
+                backgroundColor: "#424242", // Hover effect only for larger screens
+              },
+              m: 1,
+            },
+            "&:active": {
+              backgroundColor: "transparent", // Remove active state effect
+            },
+            "&.MuiMenuItem-root": {
+              transition: "none", // Disable transition effects
+            },
+          }}
+        >
+          Delete all shared links
+        </MenuItem>
+      </Popover>
     </>
   );
 };

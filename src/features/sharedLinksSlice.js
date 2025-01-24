@@ -32,6 +32,25 @@ export const validateSharedLink = createAsyncThunk(
   }
 );
 
+// Delete all sharedLinks from Supabase
+export const delAllSharedLinksFromSupabase = createAsyncThunk(
+  "sharedLinks/delAllSharedLinksFromSupabase",
+  async (userId, { rejectWithValue }) => {
+    try {
+      // Delete all rows where userId matches
+      const { error } = await supabase
+        .from("shared_links")
+        .delete()
+        .eq("user_id", userId);
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      return rejectWithValue(error.message); // Return the error message in case of failure
+    }
+  }
+);
+
 // Async thunk for fetching shared links
 export const fetchSharedLinksFromSupabase = createAsyncThunk(
   "sharedLinks/fetchSharedLinksFromSupabase",
@@ -152,6 +171,9 @@ export const sharedLinksSlice = createSlice({
         }
       }
     },
+    delAllSharedLinks: (state) => {
+      state.sharedLinks = [];
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -191,6 +213,6 @@ export const sharedLinksSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addSharedLink, delSharedLink, currentlySharedLinkToken } = sharedLinksSlice.actions;
+export const { addSharedLink, delSharedLink, currentlySharedLinkToken, delAllSharedLinks } = sharedLinksSlice.actions;
 
 export default sharedLinksSlice.reducer;
