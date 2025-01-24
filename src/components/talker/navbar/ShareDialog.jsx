@@ -23,7 +23,7 @@ const ShareDialog = ({ open, handleClose }) => {
     const [copied, setCopied] = useState(false);
     const conversationId = useSelector((state) => state.conversations.activeConversationId);
     const linkToken = useSelector((state) => state.sharedLinks.sharedLinkToken);
-    const sharingLink = `localhost:5173/talker/share/${conversationId}/${linkToken}`; // Example link
+    const sharingLink = `https://talkerai.netlify.app/talker/share/${conversationId}/${linkToken}`; // Example link
 
     // getting the currently shared link's Token when the dialog opens
     useEffect(() => {
