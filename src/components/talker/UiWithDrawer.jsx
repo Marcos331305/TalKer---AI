@@ -39,7 +39,7 @@ import systemTheme from "../../scripts/muiTheme.js";
 import YourData from "./YourData.jsx";
 import { format } from "date-fns";
 import { customAlphabet } from "nanoid";
-import { addSharedLink, storeSharedLinkInSupabase } from "../../features/sharedLinksSlice.js";
+import { addSharedLink, storeSharedLinkInSupabase } from "../../features/yourDataSlice.js";
 
 const drawerWidth = 260;
 

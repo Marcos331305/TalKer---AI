@@ -19,7 +19,7 @@ import {
   delAllSharedLinksFromSupabase,
   delSharedLink,
   delSharedLinkFromSupabase,
-} from "../../features/sharedLinksSlice";
+} from "../../features/yourDataSlice";
 import { useTheme } from "@emotion/react";
 import { getAuth } from "firebase/auth";
 

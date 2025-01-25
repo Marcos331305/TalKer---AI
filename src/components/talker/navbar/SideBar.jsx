@@ -51,7 +51,7 @@ import YourData from "../YourData";
 import {
   addSharedLink,
   storeSharedLinkInSupabase,
-} from "../../../features/sharedLinksSlice";
+} from "../../../features/yourDataSlice";
 import { customAlphabet } from "nanoid";
 import { format } from "date-fns";
 

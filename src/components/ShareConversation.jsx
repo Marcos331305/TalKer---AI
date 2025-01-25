@@ -7,7 +7,7 @@ import UserMessageContainer from "./talker/UserMessageContainer";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchConversationWithMessages } from "../features/conversationsSlice";
-import { validateSharedLink } from "../features/sharedLinksSlice";
+import { validateSharedLink } from "../features/yourDataSlice";
 
 const ShareConversation = () => {
   const dispatch = useDispatch();

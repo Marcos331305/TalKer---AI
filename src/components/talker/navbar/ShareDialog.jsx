@@ -16,7 +16,7 @@ import WhatsApp from '@mui/icons-material/WhatsApp';
 import LinkedIn from '@mui/icons-material/LinkedIn';
 import { FaTelegramPlane, FaRedditSquare } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { currentlySharedLinkToken } from '../../../features/sharedLinksSlice';
+import { currentlySharedLinkToken } from '../../../features/yourDataSlice';
 
 const ShareDialog = ({ open, handleClose }) => {
     const dispatch = useDispatch();

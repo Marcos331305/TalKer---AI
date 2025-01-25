@@ -14,7 +14,7 @@ import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import systemTheme from '../../scripts/muiTheme';
 import { StateContext } from '../../main';
-import { fetchSharedLinksFromSupabase } from '../../features/sharedLinksSlice';
+import { fetchSharedLinksFromSupabase } from '../../features/yourDataSlice';
 
 const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating }) => {
   // StateContext for stopGeneratingResponseButton
