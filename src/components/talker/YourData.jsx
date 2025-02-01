@@ -9,20 +9,26 @@ import {
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import SharedLinks from "./SharedLinks";
+import ExportDataDialog from "./ExportDataDialog";
 
 const YourData = ({ yourDataOpened, setYourDataOpened }) => {
 const [openSharedLinks, setOpenSharedLinks] = useState(false); // State to control dialog visibility of sharedLinks
+const [openExportData, setOpenExportData] = useState(false); // State to control dialog visibility of exportData
 
 const handleOpenSharedLinksDialog = () => {
 setYourDataOpened(false);
 setOpenSharedLinks(true);
 };
+const handleOpenExportDataDialog = () => {
+setYourDataOpened(false);
+setOpenExportData(true);
+};
   return (
     <>
       {/* Backdrop */}
-      {(yourDataOpened || openSharedLinks) && (
+      {(yourDataOpened || openSharedLinks || openExportData) && (
         <Backdrop
-          open={yourDataOpened || openSharedLinks}
+          open={yourDataOpened || openSharedLinks || openExportData}
           sx={{
             zIndex: 9999, // Ensure the backdrop is behind the settings dialog but above other UI elements
             bgcolor: "rgba(5, 5, 5, 0.7)", // Semi-transparent black background
@@ -109,7 +115,7 @@ setOpenSharedLinks(true);
               }}
             >
               <Typography sx={{ color: "#FFFFFF" }}>Export data</Typography>
-              <Button
+              <Button onClick={handleOpenExportDataDialog}
                 variant="outlined"
                 sx={{
                   backgroundColor: "#2F2F2F",
@@ -155,6 +161,7 @@ setOpenSharedLinks(true);
 
       {/* Rendering of yourDataMenu components */}
     <SharedLinks openSharedLinks={openSharedLinks} setOpenSharedLinks={setOpenSharedLinks} setYourDataOpened={setYourDataOpened} />
+    <ExportDataDialog openExportData={openExportData} setOpenExportData={setOpenExportData} setYourDataOpened={setYourDataOpened} />
     </>
   );
 };
