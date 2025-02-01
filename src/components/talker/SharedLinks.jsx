@@ -131,7 +131,7 @@ const SharedLinks = ({
           )}
 
           {/* sharedLinks Table */}
-          {!loading && !error && sharedLinks.length > 0 && (
+          {!loading && !error && sharedLinks?.length > 0 && (
             <Box
               sx={{
                 maxHeight: "calc(10 * 48px)", // Approx. 10 rows height

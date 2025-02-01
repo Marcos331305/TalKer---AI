@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { supabase } from "../scripts/supabaseClient"; // adjust the import path as needed
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { delAllSharedLinks } from "./yourDataSlice";
 
 // Async thunk for fetching conversations from Supabase
 export const fetchConversations = createAsyncThunk(
@@ -132,7 +133,7 @@ export const generateConversationTitle = createAsyncThunk(
 // Delete all conversations(chats)
 export const delAllChatsFromSupabase = createAsyncThunk(
   "conversations/delAllChatsFromSupabase",
-  async (userId, { rejectWithValue }) => {
+  async (userId, { rejectWithValue, dispatch }) => {
     try {
       // Delete all rows where userId matches
       const { error } = await supabase
@@ -142,6 +143,8 @@ export const delAllChatsFromSupabase = createAsyncThunk(
       if (error) {
         throw error;
       }
+      // Also delete all sharedLinks realted from that conversations
+      dispatch(delAllSharedLinks());
     } catch (error) {
       return rejectWithValue(error.message); // Return the error message in case of failure
     }

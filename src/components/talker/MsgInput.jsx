@@ -9,7 +9,7 @@ import { addConversation, createConversationInSupabase, fetchConversations, gene
 import { generateUniqueId } from '../../scripts/app'
 import { getAuth } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import StopIcon from "@mui/icons-material/Stop";
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import systemTheme from '../../scripts/muiTheme';
@@ -150,10 +150,11 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
   // Handling Scrolling of chatArea
   const scrollToBottom = () => {
+    setShowScrollButton(false);
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
-        behavior: 'smooth',
+        behavior: 'auto',
       });
     }
   };
@@ -166,7 +167,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       if (chatContainer) {
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
         // Use media query to determine the threshold based on screen width
-        const threshold = window.innerWidth >= 768 ? 150 : 140;
+        const threshold = window.innerWidth >= 768 ? 100 : 70;
         setShowScrollButton(scrollHeight - scrollTop - clientHeight > threshold);
 
         // Check if the user is at the bottom
@@ -180,18 +181,6 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
     if (chatContainer) {
       chatContainer.addEventListener('scroll', handleScroll);
-    }
-
-    // Scroll to top when navigating to a new conversation
-    if (isNavigating) {
-      if (chatContainer) {
-        chatContainer.scrollTop = 0; // Scroll to the top when navigating
-      }
-    }
-
-    // Only scroll to bottom when a new message is added if the user is at the bottom
-    if (messages.length > 0 && isAtBottom && !isNavigating) {
-      scrollToBottom(); // Scroll to bottom if user is at the bottom
     }
 
     // Dynamically adjust button position based on input height
@@ -342,9 +331,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         <IconButton onClick={scrollToBottom}
           sx={{
             position: 'absolute', // Positioned relative to chatArea
+            right: '20px',
             top: scrollButtonPosition,
-            left: '50%', // Centered horizontally
-            transform: 'translateX(-50%)', // Center adjustment
             backgroundColor: '#212121',
             color: 'white',
             borderRadius: '50%',
@@ -358,7 +346,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             },
           }}
         >
-          <ArrowDownwardIcon fontSize='small' />
+          <ExpandMoreIcon fontSize='medium' />
         </IconButton>
       )}
 

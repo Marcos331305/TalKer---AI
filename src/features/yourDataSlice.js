@@ -185,7 +185,7 @@ export const sharedLinksSlice = createSlice({
       .addCase(fetchSharedLinksFromSupabase.fulfilled, (state, action) => {
         state.loading = false;
         // Format each shared_date to 'MMMM dd, yyyy'
-        const formattedLinks = action.payload.map((link) => ({
+        const formattedLinks = action.payload?.map((link) => ({
           ...link, // Copy all other properties of the link
           shared_date: format(new Date(link.shared_date), "MMMM dd, yyyy"), // Format the date
         }));

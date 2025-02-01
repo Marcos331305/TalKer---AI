@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback } from 'react';
 import { Box, Typography } from '@mui/material';
 import { styled } from '@mui/system';
 import ReactMarkdown from 'react-markdown';
@@ -37,57 +37,46 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef
 
   // Parse the message into interleaved text and code blocks
   const content = parseTalKerResponse(message);
+  // Use ref for scroll tracking
+  const autoScrollEnabled = useRef(true);
 
   // State management for typewriterEffect
   const [visibleText, setVisibleText] = useState('');
   const [typingIndex, setTypingIndex] = useState(0);
   const [currentContentIndex, setCurrentContentIndex] = useState(0);
-  const [isAtBottom, setIsAtBottom] = useState(false);
 
-  const scrollToBottom = () => {
-    if (chatContainerRef && chatContainerRef.current) {
-      // Only scroll to bottom if user is at the bottom
-      if (isAtBottom) {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
-          behavior: 'smooth',
-        });
-      }
-    }
-  };
+  const handleScroll = useCallback(() => {
+    if (!chatContainerRef.current) return;
+    
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isNearBottom = scrollHeight - (scrollTop + clientHeight) < 20;
+    
+    autoScrollEnabled.current = isNearBottom;
+  }, []);
 
-  // Detect scroll position
-  const handleScroll = () => {
-    if (chatContainerRef && chatContainerRef.current) {
-      const isAtBottom = chatContainerRef.current.scrollHeight - chatContainerRef.current.scrollTop === chatContainerRef.current.clientHeight;
-      setIsAtBottom(isAtBottom); // Update state if user is at the bottom
-    }
-  };
+  // Scroll handler for typewriter effect
+  const typewriterScroll = useCallback(() => {
+    if (!autoScrollEnabled.current || !chatContainerRef.current) return;
+    
+    chatContainerRef.current.scrollTo({
+      top: chatContainerRef.current.scrollHeight,
+      behavior: 'smooth', // Use instant scroll during typing
+    });
+  }, []);
 
+  // Setup scroll listener
   useEffect(() => {
-    // Attach scroll event listener
-    if (chatContainerRef && chatContainerRef.current) {
-      chatContainerRef.current.addEventListener('scroll', handleScroll);
-    }
+    const container = chatContainerRef?.current;
+    if (!container) return;
 
-    return () => {
-      if (chatContainerRef && chatContainerRef.current) {
-        chatContainerRef.current.removeEventListener('scroll', handleScroll);
-      }
-    };
-  }, [chatContainerRef]);
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [handleScroll]);
 
-  // Immediate rendering for non-new messages
-  useEffect(() => {
-    if (!isNewMessage) {
-      setCurrentContentIndex(content.length); // Render all content
-    }
-  }, [isNewMessage, content]);
-
-  // Typewriter effect only for newly generated responses
+  // Modified typewriter effect
   useEffect(() => {
     if (!isNewMessage || currentContentIndex >= content.length) {
-      setIsTypingEffectFinished(true); // Typing complete
+      setIsTypingEffectFinished(true);
       return;
     }
 
@@ -98,32 +87,24 @@ const AiMessageContainer = ({ message, isLoading, isNewMessage, chatContainerRef
 
     const typeNextChar = () => {
       if (typingIndex < currentItem.value.length) {
-        // Add next character
-        setVisibleText((prev) => prev + currentItem.value[typingIndex]);
-        setTypingIndex((prev) => prev + 1);
-        scrollToBottom();
+        setVisibleText(prev => prev + currentItem.value[typingIndex]);
+        setTypingIndex(prev => prev + 1);
+        typewriterScroll(); // Scroll on each character
       } else {
-        // Current item fully typed, move to the next item
         clearInterval(typingInterval);
-        setTypingIndex(0); // Reset typing index
-        setVisibleText(''); // Reset visible text for next item
-        setCurrentContentIndex((prev) => prev + 1); // Move to the next content item
+        setTypingIndex(0);
+        setVisibleText('');
+        setCurrentContentIndex(prev => prev + 1);
       }
     };
 
     if (isNewMessage) {
-      typingInterval = setInterval(typeNextChar, 7); // Typing speed
+      typingInterval = setInterval(typeNextChar, 7);
     }
 
-    return () => clearInterval(typingInterval); // Cleanup
-  }, [currentContentIndex, typingIndex, isNewMessage, content]);
+    return () => clearInterval(typingInterval);
+  }, [currentContentIndex, typingIndex, isNewMessage, content, typewriterScroll]);
 
-  // Separate useEffect to hide stop button when typing is finished
-useEffect(() => {
-  if (isTypingEffectFinished) {
-    setIsTypingEffectActive(false); // Hide stop button when typing is complete
-  }
-}, [isTypingEffectFinished]);
 
   return (
     <Container sx={{ width: '100%' }}>
