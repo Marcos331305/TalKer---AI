@@ -102,6 +102,17 @@ const ChatArea = ({ chatContainerRef }) => {
           md: "768px", // Max width of 768px for medium and larger screens
         },
         width: "100% !important",
+        "&::-webkit-scrollbar": {
+          width: "4px",
+          backgroundColor: "transparent",
+        },
+        "&::-webkit-scrollbar-thumb": {
+          backgroundColor: "#676767",
+          borderRadius: '4px'
+        },
+        "&::-webkit-scrollbar-track": {
+        backgroundColor: 'transparent'
+        }
       }}
     >
       {/* React Helmet for Dynamic Title */}
