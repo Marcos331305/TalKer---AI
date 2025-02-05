@@ -1,6 +1,10 @@
 import React from "react";
 import { Box, Button, Divider, Typography } from "@mui/material";
 import { styled } from "@mui/system";
+import { toast } from "react-toastify";
+import { getAuth } from "firebase/auth";
+import { useDispatch } from "react-redux";
+import { exportUserData } from "../../features/yourDataSlice";
 
 const BulletPoint = styled("span")({
   display: "inline-block",
@@ -18,12 +22,26 @@ const ExportDataDialog = ({
   setOpenExportData,
   setYourDataOpened,
 }) => {
+  const auth = getAuth();
+  const userId = auth.currentUser.uid;
+  const dispatch = useDispatch();
+
   const handleCloseExportDataDialog = () => {
     setOpenExportData(false);
     setYourDataOpened(true);
   };
   const handleConfirmExport = () => {
-    console.log("Exporting data...");
+    toast.success("Exporting your data... The download will start automatically once ready.",{
+        position: "top-center",
+        theme: "dark",
+        style: {
+            borderRadius: '8px',
+            ...(window.innerWidth > 768 && { minWidth: '450px' }) // Apply only for large screens
+        }
+    });
+    handleCloseExportDataDialog();
+    // now handling the exportingData functionality
+    dispatch(exportUserData(userId));
   };
   return (
     <>
@@ -53,7 +71,7 @@ const ExportDataDialog = ({
               lineHeight: "24px",
             }}
           >
-            Request data export - are you sure?
+             Data export - are you sure?
           </Typography>
           <Divider sx={{ backgroundColor: "#444444", marginTop: 2 }} />
 
@@ -61,9 +79,9 @@ const ExportDataDialog = ({
           <Box sx={{ marginTop: 2, display: "flex", flexDirection: "column" }}>
             {[
               "Your account details and chats will be included in the export.",
-              "The data will be sent to your registered email in a downloadable file.",
-              "The download link will expire 24 hours after you receive it.",
-              "Processing may take some time. You'll be notified when it's ready.",
+              "Your data is being processed. The download will start automatically once ready.",
+              "The export may take a moment, depending on your data size.",
+              "Your data will be saved as a ZIP file on your device.",
             ].map((point, index) => (
               <Box
                 key={index}

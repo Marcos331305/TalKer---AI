@@ -28,6 +28,7 @@ const Main = () => {
           <ToastContainer style={{
             margin: '8px auto',
             padding: '0 8px',
+            zIndex: 20000,
           }} />
           <HelmetProvider>
             <StateContext.Provider value={{ isLightMode, setIsLightMode, isTypingEffectActive, setIsTypingEffectActive, isTypingEffectFinished, setIsTypingEffectFinished }}>

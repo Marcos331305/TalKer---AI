@@ -36,7 +36,7 @@ const SharedLinks = ({
   const [anchorEl, setAnchorEl] = useState(null);
   // Access sharedLinks state's from Redux Store
   const { sharedLinks, sharedLinkToken, loading, error } = useSelector(
-    (state) => state.sharedLinks
+    (state) => state.yourData
   );
 
   useEffect(() => {

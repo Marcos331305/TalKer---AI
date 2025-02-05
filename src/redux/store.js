@@ -9,6 +9,6 @@ export const store = configureStore({
     auth: authReducer,
     messages: messageReducer,
     conversations: conversationsReducer,
-    sharedLinks: sharedLinksReducer,
+    yourData: sharedLinksReducer,
   },
 });

@@ -17,7 +17,7 @@ const ShareConversation = () => {
     messages,
     error: fetchError,
   } = useSelector((state) => state.conversations);
-  const { error: validationError } = useSelector((state) => state.sharedLinks);
+  const { error: validationError } = useSelector((state) => state.yourData);
 
   useEffect(() => {
     const initiateLinkValidation = async () => {
