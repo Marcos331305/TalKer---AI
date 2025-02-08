@@ -18,7 +18,7 @@ const initialState = {
 
 // Async thunk to fetch data from users, shared_links, and conversations tables
 export const fetchEntireUserDataFromSupabase = createAsyncThunk(
-  "yourData/fetchEntireUserDataFromSupabase", // Action type
+  "yourData/fetchEntireUserDataFromSupabase",
   async (userId, { rejectWithValue }) => {
     try {
       // Fetch user data only for currentUser from users table
@@ -34,27 +34,25 @@ export const fetchEntireUserDataFromSupabase = createAsyncThunk(
       const { data: conversationsData, error: conversationsError } =
         await supabase.from("conversations").select("*").eq("user_id", userId);
 
-      if (
-        conversationsError ||
-        (conversationsData && conversationsData.length === 0)
-      ) {
-        throw new Error(
-          conversationsError
-            ? conversationsError.message
-            : "No conversations found for this user."
-        );
+      if (conversationsError) throw new Error(conversationsError.message);
+
+      // If no conversations exist, set to an empty array
+      const validConversations = conversationsData || [];
+
+      // Fetch messages data only if there are conversations
+      let messagesData = [];
+      if (validConversations.length > 0) {
+        const { data, error: messagesError } = await supabase
+          .from("messages")
+          .select("*")
+          .in(
+            "conversation_id",
+            validConversations.map((conv) => conv.conversation_id)
+          );
+
+        if (messagesError) throw new Error(messagesError.message);
+        messagesData = data || [];
       }
-
-      // Fetch messages data only for currentUser from messages table
-      const { data: messagesData, error: messagesError } = await supabase
-        .from("messages")
-        .select("*")
-        .in(
-          "conversation_id",
-          conversationsData.map((conv) => conv.conversation_id)
-        );
-
-      if (messagesError) throw new Error(messagesError.message);
 
       // Fetch shared links data only for currentUser from shared_links table
       const { data: sharedLinksData, error: sharedLinksError } = await supabase
@@ -64,10 +62,17 @@ export const fetchEntireUserDataFromSupabase = createAsyncThunk(
 
       if (sharedLinksError) throw new Error(sharedLinksError.message);
 
-      // Return all the fetched data as an object
-      return { userData, conversationsData, messagesData, sharedLinksData };
+      // Ensure sharedLinksData is always an array
+      const validSharedLinks = sharedLinksData || [];
+
+      // Return all the fetched data (some may be empty)
+      return {
+        userData,
+        conversationsData: validConversations,
+        messagesData,
+        sharedLinksData: validSharedLinks,
+      };
     } catch (error) {
-      // Return error if any of the fetches fail
       return rejectWithValue(error.message);
     }
   }
