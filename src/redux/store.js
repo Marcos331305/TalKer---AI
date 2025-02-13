@@ -3,6 +3,7 @@ import authReducer from "../features/authSlice";
 import messageReducer from "../features/messageSlice";
 import conversationsReducer from "../features/conversationsSlice";
 import sharedLinksReducer from "../features/yourDataSlice";
+import aiFeaturesReducer from "../features/aiFeaturesSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     messages: messageReducer,
     conversations: conversationsReducer,
     yourData: sharedLinksReducer,
+    aiFeatures: aiFeaturesReducer,
   },
 });

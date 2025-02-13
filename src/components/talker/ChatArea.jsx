@@ -14,6 +14,7 @@ import { fetchMessages } from "../../features/messageSlice";
 import { Helmet } from "react-helmet-async";
 import { StateContext } from "../../main";
 import { setActiveConversationId } from "../../features/conversationsSlice";
+import { setIsSearching } from "../../features/aiFeaturesSlice";
 
 const ChatArea = ({ chatContainerRef }) => {
   const { isTypingEffectFinished, setIsTypingEffectFinished } =
@@ -35,6 +36,7 @@ const ChatArea = ({ chatContainerRef }) => {
   useEffect(() => {
     if (conversationId) {
       dispatch(setActiveConversationId(conversationId));
+      dispatch(setIsSearching(sessionStorage.getItem("isSearching") === "true"));
       dispatch(fetchMessages(conversationId));
     }
   }, []);

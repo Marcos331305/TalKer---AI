@@ -1,24 +1,53 @@
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { InputBase, IconButton, Typography, Box, Collapse } from '@mui/material';
-import MicIcon from '@mui/icons-material/Mic';
-import MicOffIcon from '@mui/icons-material/MicOff';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useSelector, useDispatch } from 'react-redux'
-import { addMsg, storeMsgInSupabase, talkerResponse, updateIsNewMessage } from '../../features/messageSlice'
-import { addConversation, createConversationInSupabase, fetchConversations, generateConversationTitle, setActiveConversationId, setActiveIndex } from '../../features/conversationsSlice'
-import { generateUniqueId } from '../../scripts/app'
-import { getAuth } from 'firebase/auth';
-import { useNavigate } from 'react-router-dom';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React, { useState, useEffect, useRef, useContext } from "react";
+import {
+  InputBase,
+  IconButton,
+  Typography,
+  Box,
+  Collapse,
+  Button,
+} from "@mui/material";
+import MicIcon from "@mui/icons-material/Mic";
+import MicOffIcon from "@mui/icons-material/MicOff";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  addMsg,
+  storeMsgInSupabase,
+  talkerResponse,
+  updateIsNewMessage,
+} from "../../features/messageSlice";
+import {
+  addConversation,
+  createConversationInSupabase,
+  fetchConversations,
+  generateConversationTitle,
+  setActiveConversationId,
+  setActiveIndex,
+} from "../../features/conversationsSlice";
+import { generateUniqueId } from "../../scripts/app";
+import { getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import StopIcon from "@mui/icons-material/Stop";
-import AttachFileIcon from '@mui/icons-material/AttachFile';
-import systemTheme from '../../scripts/muiTheme';
-import { StateContext } from '../../main';
-import { fetchSharedLinksFromSupabase } from '../../features/yourDataSlice';
+import AttachFileIcon from "@mui/icons-material/AttachFile";
+import systemTheme from "../../scripts/muiTheme";
+import { StateContext } from "../../main";
+import { fetchSharedLinksFromSupabase } from "../../features/yourDataSlice";
+import { Language } from "@mui/icons-material";
+import { setIsSearching } from "../../features/aiFeaturesSlice";
 
-const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShowScrollButton, isNavigating }) => {
+const MsgInput = ({
+  messageInputRef,
+  chatContainerRef,
+  showScrollButton,
+  setShowScrollButton,
+  isNavigating,
+}) => {
   // StateContext for stopGeneratingResponseButton
-  const { isTypingEffectActive, setIsTypingEffectActive } = useContext(StateContext);
+  const { isTypingEffectActive, setIsTypingEffectActive } =
+    useContext(StateContext);
+  const isSearching = useSelector((state) => state.aiFeatures.isSearching);
   const [isRecording, setIsRecording] = useState(false);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const recognitionRef = useRef(null); // Store recognition instance in ref
@@ -28,12 +57,16 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   const [currentTime, setCurrentTime] = useState(null);
   const [lastRecordedTime, setLastRecordedTime] = useState("00:00");
   const [timerId, setTimerId] = useState(null); // Store interval ID
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [scrollButtonPosition, setScrollButtonPosition] = useState('-55px');
-  const activeConversationId = useSelector((state) => state.conversations.activeConversationId);
-  const conversations = useSelector((state) => state.conversations.conversations);
+  const [scrollButtonPosition, setScrollButtonPosition] = useState("-55px");
+  const activeConversationId = useSelector(
+    (state) => state.conversations.activeConversationId
+  );
+  const conversations = useSelector(
+    (state) => state.conversations.conversations
+  );
   const messages = useSelector((state) => state.messages.messages);
   // Initialize the Firebase Auth instance
   const auth = getAuth();
@@ -49,22 +82,25 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     dispatch(fetchSharedLinksFromSupabase({ userId: user.uid }));
 
     // Check if this is the first app load
-    const isFirstLoad = sessionStorage.getItem('isFirstLoad') === null;
+    const isFirstLoad = sessionStorage.getItem("isFirstLoad") === null;
 
     if (isFirstLoad) {
       // Prevent auto-selection of activeConversationId on first load
-      sessionStorage.setItem('isFirstLoad', 'false');
+      sessionStorage.setItem("isFirstLoad", "false");
       dispatch(setActiveConversationId(null));
     } else {
       // Retrieve stored active conversation from sessionStorage for subsequent loads
-      const storedData = sessionStorage.getItem('activeConversationId');
+      const storedData = sessionStorage.getItem("activeConversationId");
 
       if (storedData) {
         try {
           const activeConversationId = JSON.parse(storedData);
           dispatch(setActiveConversationId(activeConversationId));
         } catch (error) {
-          console.error("Error parsing activeConversationId from sessionStorage:", error);
+          console.error(
+            "Error parsing activeConversationId from sessionStorage:",
+            error
+          );
         }
       }
     }
@@ -77,19 +113,19 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     const userMessage = {
       id: generateUniqueId(),
       content: message,
-      sender: 'user'
+      sender: "user",
     };
 
     // Add user message to Redux state for immediate UI update
     dispatch(addMsg(userMessage));
-    setMessage(''); // Clear the input field
+    setMessage(""); // Clear the input field
 
     // Adding talkerMessage immediately for better exprience
     const talkerMsg = {
       id: generateUniqueId(),
-      content: '',
-      sender: 'TalKer',
-      isNewMessage: true // for happening typewriterEffect only once
+      content: "",
+      sender: "TalKer",
+      isNewMessage: true, // for happening typewriterEffect only once
     };
     dispatch(addMsg(talkerMsg));
 
@@ -97,7 +133,10 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     let talkerResponseContent = "";
     try {
       const talkerResponseObj = await dispatch(
-        talkerResponse({ prompt: userMessage.content, dummyMsgId: talkerMsg.id })
+        talkerResponse({
+          prompt: userMessage.content,
+          dummyMsgId: talkerMsg.id,
+        })
       ).unwrap();
 
       // Explicitly throwing the erro if apiResponse is ok, But actual talkerResponse is missing
@@ -108,7 +147,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       talkerResponseContent = talkerResponseObj.talkerResponse;
     } catch (error) {
       // If Talker response fails, provide an error message
-      talkerResponseContent = "Oops, something went wrong. Please try again or try with a different Prompt";
+      talkerResponseContent =
+        "Oops, something went wrong. Please try again or try with a different Prompt";
     }
 
     // Update Talker message with final content
@@ -116,14 +156,16 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
     if (!activeConversationId) {
       // Generate a conversation title
-      const response = await dispatch(generateConversationTitle(userMessage.content));
+      const response = await dispatch(
+        generateConversationTitle(userMessage.content)
+      );
       const conversationTitle = response.payload;
       const now = new Date();
       const conversation = {
         conversation_id: generateUniqueId(),
         user_id: user.uid,
         title: conversationTitle,
-        created_at: now.toISOString()
+        created_at: now.toISOString(),
       };
 
       // Add new conversation to Redux state
@@ -138,12 +180,32 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
       // Save the new conversation and messages to Supabase
       await dispatch(createConversationInSupabase(conversation));
-      dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: conversation.conversation_id }));
-      await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: conversation.conversation_id }));
+      dispatch(
+        storeMsgInSupabase({
+          msg: userMessage,
+          conversation_id: conversation.conversation_id,
+        })
+      );
+      await dispatch(
+        storeMsgInSupabase({
+          msg: updatedTalkerMsg,
+          conversation_id: conversation.conversation_id,
+        })
+      );
       dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
     } else {
-      dispatch(storeMsgInSupabase({ msg: userMessage, conversation_id: activeConversationId }));
-      await dispatch(storeMsgInSupabase({ msg: updatedTalkerMsg, conversation_id: activeConversationId }));
+      dispatch(
+        storeMsgInSupabase({
+          msg: userMessage,
+          conversation_id: activeConversationId,
+        })
+      );
+      await dispatch(
+        storeMsgInSupabase({
+          msg: updatedTalkerMsg,
+          conversation_id: activeConversationId,
+        })
+      );
       dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
     }
   };
@@ -154,7 +216,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTo({
         top: chatContainerRef.current.scrollHeight,
-        behavior: 'auto',
+        behavior: "auto",
       });
     }
   };
@@ -168,7 +230,9 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
         const { scrollTop, scrollHeight, clientHeight } = chatContainer;
         // Use media query to determine the threshold based on screen width
         const threshold = window.innerWidth >= 768 ? 100 : 70;
-        setShowScrollButton(scrollHeight - scrollTop - clientHeight > threshold);
+        setShowScrollButton(
+          scrollHeight - scrollTop - clientHeight > threshold
+        );
 
         // Check if the user is at the bottom
         if (scrollHeight - scrollTop === clientHeight) {
@@ -180,14 +244,14 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     };
 
     if (chatContainer) {
-      chatContainer.addEventListener('scroll', handleScroll);
+      chatContainer.addEventListener("scroll", handleScroll);
     }
 
     // Dynamically adjust button position based on input height
     const resizeObserver = new ResizeObserver(() => {
       if (messageInputRef.current) {
         const inputFieldHeight = messageInputRef.current.scrollHeight;
-        const buttonPosition = inputFieldHeight > 100 ? '-48px' : '-48px'; // Adjust as needed
+        const buttonPosition = inputFieldHeight > 100 ? "-48px" : "-48px"; // Adjust as needed
         setScrollButtonPosition(buttonPosition);
       }
     });
@@ -199,7 +263,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
     // Cleanup functions for scroll event listener
     return () => {
       if (chatContainer) {
-        chatContainer.removeEventListener('scroll', handleScroll);
+        chatContainer.removeEventListener("scroll", handleScroll);
       }
       if (messageInputRef.current) {
         resizeObserver.unobserve(messageInputRef.current); // Clean up observer
@@ -236,7 +300,10 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       const minutes = Math.floor(diffInSeconds / 60);
       const seconds = diffInSeconds % 60;
       setLastRecordedTime(
-        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`
+        `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+          2,
+          "0"
+        )}`
       );
     }
 
@@ -251,7 +318,10 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       const diffInSeconds = Math.floor((currentTime - startTime) / 1000);
       const minutes = Math.floor(diffInSeconds / 60);
       const seconds = diffInSeconds % 60;
-      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+      return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+        2,
+        "0"
+      )}`;
     } else {
       // Timer is stopped, show the last recorded time
       return lastRecordedTime;
@@ -261,11 +331,14 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
   // speechRecognition using webSpeech api
   // Initialize the recognition instance when the component is mounted
   useEffect(() => {
-    if (!("SpeechRecognition" in window || "webkitSpeechRecognition" in window)) {
+    if (
+      !("SpeechRecognition" in window || "webkitSpeechRecognition" in window)
+    ) {
       alert("Speech Recognition not supported in this browser.");
     } else {
       setSpeechApiSupported(true);
-      recognitionRef.current = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognitionRef.current = new (window.SpeechRecognition ||
+        window.webkitSpeechRecognition)();
       const recognition = recognitionRef.current;
       recognition.lang = "en-US";
       recognition.continuous = true; // Keeps listening until stopped
@@ -311,7 +384,7 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
 
   // Stop generating response
   const handleStopGeneratingResponse = () => {
-    console.log('Stop generating response');
+    console.log("Stop generating response");
   };
 
   return (
@@ -319,34 +392,35 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       sx={{
         maxWidth: {
           xs: "100%",
-          md: '744px'
+          md: "744px",
         },
-        width: '100%',
-        mx: 'auto',
+        width: "100%",
+        mx: "auto",
         position: "relative",
       }}
     >
       {/* scrollDown button */}
       {showScrollButton && (
-        <IconButton onClick={scrollToBottom}
+        <IconButton
+          onClick={scrollToBottom}
           sx={{
-            position: 'absolute', // Positioned relative to chatArea
-            right: '20px',
+            position: "absolute", // Positioned relative to chatArea
+            right: "20px",
             top: scrollButtonPosition,
-            backgroundColor: '#212121',
-            color: 'white',
-            borderRadius: '50%',
-            border: '1px solid #383737',
+            backgroundColor: "#212121",
+            color: "white",
+            borderRadius: "50%",
+            border: "1px solid #383737",
             width: 32,
             height: 32,
             zIndex: 1000,
-            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-            '&:hover': {
-              backgroundColor: '#333333',
+            boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+            "&:hover": {
+              backgroundColor: "#333333",
             },
           }}
         >
-          <ExpandMoreIcon fontSize='medium' />
+          <ExpandMoreIcon fontSize="medium" />
         </IconButton>
       )}
 
@@ -354,14 +428,14 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
       <Box
         sx={{
           display: "flex",
-          flexDirection: 'column',
+          flexDirection: "column",
           backgroundColor: systemTheme.palette.secondary.main,
           borderRadius: "1.5rem",
-          px: '10px',
-          py: '4px',
-          mx: '12px',
-          '@media (min-width: 768px)': {
-            mx: '20px', // Custom margin for exactly 768px and above
+          px: "10px",
+          py: "4px",
+          mx: "12px",
+          "@media (min-width: 768px)": {
+            mx: "20px", // Custom margin for exactly 768px and above
           },
         }}
       >
@@ -371,8 +445,8 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             flex: 1,
             display: "flex",
             alignItems: "center",
-            px: '8px',
-            py: '6px'
+            px: "8px",
+            py: "6px",
           }}
         >
           <InputBase
@@ -380,67 +454,102 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             name="Message-Input"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
-            placeholder={(isRecording && speechApiSupported) ? 'Listening...' : 'Message TalKer'}
+            placeholder={
+              isRecording && speechApiSupported
+                ? "Listening..."
+                : "Message TalKer"
+            }
             multiline
             minRows={1} // Minimum rows for input
             maxRows={7} // Maximum rows for input
             sx={{
               flex: 1, // Allow input to take all available space
-              fontSize: '16px',
+              fontSize: "16px",
               color: systemTheme.palette.text.primary,
-              borderRadius: '8px',
-              '& .MuiInputBase-input': {
-                border: 'none',
-                outline: 'none',
-                overflowY: 'auto', // Enable vertical scrolling for overflow content
-                wordBreak: 'break-word', // Wrap long words
-                whiteSpace: 'pre-wrap', // Preserve white space and new lines
-                height: 'auto', // Automatically adjust height
+              borderRadius: "8px",
+              "& .MuiInputBase-input": {
+                border: "none",
+                outline: "none",
+                overflowY: "auto", // Enable vertical scrolling for overflow content
+                wordBreak: "break-word", // Wrap long words
+                whiteSpace: "pre-wrap", // Preserve white space and new lines
+                height: "auto", // Automatically adjust height
               },
             }}
           />
         </Box>
         {/* Icon's Container */}
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          py: '6px',
-          alignItems: 'center'
-        }}>
-          {/* fileUpload Icon */}
-          <IconButton sx={{
-            color: systemTheme.palette.customColors.customColor,
-            p: 0,
-            pl: '1px'
-          }} aria-label="upload file">
-            <AttachFileIcon fontSize='medium' />
-          </IconButton>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            py: "6px",
+            alignItems: "center",
+          }}
+        >
+          {/* webSearch Icon */}
+          <Button
+            disableRipple
+            onClick={() => dispatch(setIsSearching(!isSearching))}
+            sx={{
+              color: systemTheme.palette.primary.main,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "flex-start", // Align content to the left when not searching
+              gap: "4px",
+              textTransform: "none",
+              fontSize: "16px",
+              borderRadius: "25px",
+              p: 0,
+              pl: "5px",
+            }}
+          >
+            <Language
+              fontSize="medium"
+              sx={{
+                verticalAlign: "middle",
+                color: isSearching && "#48AAFF",
+              }}
+            />
+            <Typography
+              sx={{
+                fontSize: "16px",
+                fontWeight: 500,
+                color: isSearching && "#48AAFF",
+              }}
+            >
+              Search
+            </Typography>
+            {/* Only show the text when searching */}
+          </Button>
           {/* microphone and sendBtn container */}
-          <Box sx={{
-            display: 'flex',
-            gap: '4px',
-            alignItems: 'center'
-          }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: "4px",
+              alignItems: "center",
+            }}
+          >
             {/* microphoneIcon */}
             <IconButton
               onClick={() => {
                 if (speechApiSupported) {
-                  toggleRecording() // Toggling the recording state
+                  toggleRecording(); // Toggling the recording state
                   if (!isRecording) {
                     startTimer(); // Start the timer only if recording is about to begin
-                    startRecognition()
+                    startRecognition();
                   } else {
                     stopTimer(); // Stop the timer when recording ends
-                    stopRecognition()
+                    stopRecognition();
                   }
                 }
                 if (speechApiSupported === false) {
-                  toggleRecording()
+                  toggleRecording();
                 }
               }}
               sx={{
-                color: systemTheme.palette.customColors.customColor,
-                padding: '4px',
+                color: systemTheme.palette.primary.main,
+                padding: "4px",
                 display: message.trim() ? "none" : "flex",
               }}
             >
@@ -464,25 +573,31 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
                   },
                   }}
                 /> */}
-              {/* </IconButton> : */}
-              <IconButton
-                onClick={handleSend}
-                disabled={!message.trim()}
+            {/* </IconButton> : */}
+            <IconButton
+              onClick={handleSend}
+              disabled={!message.trim()}
+              sx={{
+                backgroundColor: !message.trim()
+                  ? `${systemTheme.palette.customColors.customColor4} !important`
+                  : systemTheme.palette.customColors.customColor,
+                borderRadius: "50%", // Fully rounded button
+                padding: "4px",
+                "&:hover": {
+                  backgroundColor: !message.trim()
+                    ? `${systemTheme.palette.customColors.customColor4} !important`
+                    : systemTheme.palette.customColors.customColor,
+                },
+              }}
+            >
+              <KeyboardArrowUpIcon
                 sx={{
-                  backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
-                  borderRadius: '50%', // Fully rounded button
-                  padding: '4px',
-                  '&:hover': {
-                    backgroundColor: !message.trim() ? `${systemTheme.palette.customColors.customColor4} !important` : systemTheme.palette.customColors.customColor,
-                  },
+                  color: !message.trim()
+                    ? systemTheme.palette.customColors.customColor3
+                    : systemTheme.palette.customColors.customColor2,
                 }}
-              >
-                <KeyboardArrowUpIcon
-                  sx={{
-                    color: !message.trim() ? systemTheme.palette.customColors.customColor3 : systemTheme.palette.customColors.customColor2,
-                  }}
-                />
-              </IconButton>
+              />
+            </IconButton>
           </Box>
         </Box>
       </Box>
@@ -493,9 +608,9 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
           sx={{
             backgroundColor: "#2F2F2F",
             borderRadius: "8px",
-            mt: '12px',
+            mt: "12px",
             p: 2,
-            mx: '12px',
+            mx: "12px",
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -504,60 +619,75 @@ const MsgInput = ({ messageInputRef, chatContainerRef, showScrollButton, setShow
             height: "150px", // Fixed height for the recording UI
           }}
         >
-          {
-            speechApiSupported ? (
-              <>
-                {/* Timer */}
-                <Typography
-                  sx={{
-                    position: "absolute",
-                    top: "10px",
-                    left: "10px",
-                    color: "white",
-                    fontSize: "14px",
-                  }}
-                >
-                  {getElapsedTime()}
-                </Typography>
-
-                {/* Stop Recording */}
-                <IconButton
-                  onClick={() => {
-                    stopTimer();
-                    stopRecognition();
-                  }}
-                  sx={{
-                    color: "white",
-                    borderRadius: "50%",
-                    mb: 2,
-                    border: '1px solid white',
-                  }}
-                >
-                  <StopIcon />
-                </IconButton>
-
-                {/* Text */}
-                <Typography sx={{ color: "white", fontSize: "16px" }}>
-                  Tap to stop recording
-                </Typography>
-              </>
-            ) : (
-              <Typography sx={{ color: "white", fontSize: "16px", textAlign: 'center' }}>
-                Sorry, webSpeech is not supported in your browser!
+          {speechApiSupported ? (
+            <>
+              {/* Timer */}
+              <Typography
+                sx={{
+                  position: "absolute",
+                  top: "10px",
+                  left: "10px",
+                  color: systemTheme.palette.primary.main,
+                  fontSize: "14px",
+                }}
+              >
+                {getElapsedTime()}
               </Typography>
-            )
-          }
+
+              {/* Stop Recording */}
+              <IconButton
+                onClick={() => {
+                  stopTimer();
+                  stopRecognition();
+                }}
+                sx={{
+                  color: systemTheme.palette.primary.main,
+                  borderRadius: "50%",
+                  mb: 2,
+                  border: "1px solid #B4B4B4",
+                }}
+              >
+                <StopIcon />
+              </IconButton>
+
+              {/* Text */}
+              <Typography
+                sx={{
+                  color: systemTheme.palette.primary.main,
+                  fontSize: "16px",
+                }}
+              >
+                Tap to stop recording
+              </Typography>
+            </>
+          ) : (
+            <Typography
+              sx={{
+                color: systemTheme.palette.primary.main,
+                fontSize: "16px",
+                textAlign: "center",
+              }}
+            >
+              Sorry, webSpeech is not supported in your browser!
+            </Typography>
+          )}
         </Box>
-      </Collapse >
+      </Collapse>
 
       {/* Disclaimer message */}
-      <Typography Typography
+      <Typography
+        Typography
         variant="body2"
-        sx={{ padding: "8px", textAlign: "center", fontSize: '12px', color: systemTheme.palette.text.secondary }}
+        sx={{
+          padding: "8px",
+          textAlign: "center",
+          fontSize: "12px",
+          color: systemTheme.palette.text.secondary,
+        }}
       >
         TalKer can make mistakes.Check important info.
       </Typography>
-    </Box >
+    </Box>
   );
 };
 
