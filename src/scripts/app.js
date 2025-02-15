@@ -139,3 +139,39 @@ export function groupConversationsByTime(conversations = []) {
   
   return grouped;
 }
+
+export const prepareDataForSummarization = async(searchData) => {
+  let extractedData = [];
+
+   // 1️⃣ Extract Knowledge Graph Info (if available)
+   if (searchData.knowledgeGraph) {
+    const { title, type, attributes } = searchData.knowledgeGraph;
+
+    if (title) extractedData.push(`**${title}**`);
+    if (type) extractedData.push(`**Type**: ${type}`);
+
+    // Extract attributes dynamically (if present)
+    if (attributes && typeof attributes === "object") {
+      Object.entries(attributes).forEach(([key, value]) => {
+        if (typeof value === "string") {
+          extractedData.push(`- **${key}**: ${value}`);
+        }
+      });
+    }
+  }
+
+  // 2️⃣ Add Organic Search Results
+  if (searchData.organic?.length) {
+    searchData.organic.forEach((result) => {
+      extractedData.push(`- **${result.title}**: ${result.snippet}`);
+    });
+  }
+
+  // 3️⃣ If No Relevant Data Found
+  if (extractedData.length === 0) {
+    extractedData.push("No relevant search results found.");
+  }
+
+  // 4️⃣ Convert Array to Single String
+  return extractedData.join("\n\n");
+};

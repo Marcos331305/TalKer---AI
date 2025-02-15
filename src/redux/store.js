@@ -4,6 +4,7 @@ import messageReducer from "../features/messageSlice";
 import conversationsReducer from "../features/conversationsSlice";
 import sharedLinksReducer from "../features/yourDataSlice";
 import aiFeaturesReducer from "../features/aiFeaturesSlice";
+import { webSearchApi } from "./webSearchApi";
 
 export const store = configureStore({
   reducer: {
@@ -12,5 +13,9 @@ export const store = configureStore({
     conversations: conversationsReducer,
     yourData: sharedLinksReducer,
     aiFeatures: aiFeaturesReducer,
+    [webSearchApi.reducerPath]: webSearchApi.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware()
+      .concat(webSearchApi.middleware)
 });

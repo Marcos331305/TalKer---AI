@@ -1,4 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { webSearchApi } from "../redux/webSearchApi";
+import { prepareDataForSummarization } from "../scripts/app";
 
 const initialState = {
   isSearching: false,
@@ -8,22 +10,22 @@ const initialState = {
 };
 
 // Async thunk for searching the web
-export const handleWebSearching = createAsyncThunk(
-  "aiFeatures/handleWebSearching",
-  async (query, { rejectWithValue }) => {
+export const handleWebSearch = createAsyncThunk(
+  "aiFeatures/handleWebSearch",
+  async ({ query }, { dispatch, rejectWithValue }) => {
     try {
-      const SEARCH_API_KEY = import.meta.env.VITE_WEB_SEARCH_API_KEY;
-      const CX = import.meta.env.VITE_WEB_SEARCH_ENGINE_ID;
+      // Call RTK Query's searchGoogle endpoint
+      const searchedResponse = await dispatch(
+        webSearchApi.endpoints.searchGoogle.initiate(query)
+      ).unwrap(); // `unwrap()` ensures we properly handle errors
 
-      const response = await fetch(
-        `https://www.googleapis.com/customsearch/v1?q=${query}&key=${SEARCH_API_KEY}&cx=${CX}`
-      );
-      const data = await response.json();
+      const preparedData = await prepareDataForSummarization(searchedResponse);
 
-      if (!response.ok)
-        throw new Error(data.error?.message || "Failed to fetch results");
+      const summarizationInstructions =
+        "Summarize the following data while ensuring all key information is included. Format it in a structured manner with headings and bullet points. The summary should be well-organized and easy to read";
+      const actualPrompt = `${preparedData}\n\n${summarizationInstructions}`;
 
-      return data.items || []; // Return search results
+      return actualPrompt;
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -47,16 +49,15 @@ const aiFeaturesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // handle webSearching
-      .addCase(handleWebSearching.pending, (state) => {
+      .addCase(handleWebSearch.pending, (state) => {
         state.status = "loading";
         state.error = null;
       })
-      .addCase(handleWebSearching.fulfilled, (state, action) => {
+      .addCase(handleWebSearch.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.results = action.payload;
-        console.log(action.payload);
       })
-      .addCase(handleWebSearching.rejected, (state, action) => {
+      .addCase(handleWebSearch.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
         console.error(action.payload);

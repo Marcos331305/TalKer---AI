@@ -35,7 +35,10 @@ import systemTheme from "../../scripts/muiTheme";
 import { StateContext } from "../../main";
 import { fetchSharedLinksFromSupabase } from "../../features/yourDataSlice";
 import { Language } from "@mui/icons-material";
-import { setIsSearching } from "../../features/aiFeaturesSlice";
+import {
+  handleWebSearch,
+  setIsSearching,
+} from "../../features/aiFeaturesSlice";
 
 const MsgInput = ({
   messageInputRef,
@@ -107,9 +110,8 @@ const MsgInput = ({
   }, []);
 
   // handle Msg sending btn
+  // 1. handle Direct Messaging
   const handleSend = async () => {
-    setIsTypingEffectActive(true); // show stopGeneratingResponseButton immediately
-
     const userMessage = {
       id: generateUniqueId(),
       content: message,
@@ -140,6 +142,113 @@ const MsgInput = ({
       ).unwrap();
 
       // Explicitly throwing the erro if apiResponse is ok, But actual talkerResponse is missing
+      if (!talkerResponseObj || !talkerResponseObj.talkerResponse) {
+        throw new Error("TalkerAPI failed to generate Response !!!");
+      }
+
+      talkerResponseContent = talkerResponseObj.talkerResponse;
+    } catch (error) {
+      // If Talker response fails, provide an error message
+      talkerResponseContent =
+        "Oops, something went wrong. Please try again or try with a different Prompt";
+    }
+
+    // Update Talker message with final content
+    const updatedTalkerMsg = { ...talkerMsg, content: talkerResponseContent };
+
+    if (!activeConversationId) {
+      // Generate a conversation title
+      const response = await dispatch(
+        generateConversationTitle(userMessage.content)
+      );
+      const conversationTitle = response.payload;
+      const now = new Date();
+      const conversation = {
+        conversation_id: generateUniqueId(),
+        user_id: user.uid,
+        title: conversationTitle,
+        created_at: now.toISOString(),
+      };
+
+      // Add new conversation to Redux state
+      dispatch(addConversation(conversation));
+      dispatch(setActiveConversationId(conversation.conversation_id)); // Ensure the conversation is active
+
+      // Short delay to allow the sidebar to recognize the new active conversation
+      setTimeout(() => {
+        dispatch(setActiveIndex(conversations.length)); // Last item index
+        navigate(`/talker/c/${conversation.conversation_id}`);
+      }, 50); // 50ms delay to ensure state and UI sync
+
+      // Save the new conversation and messages to Supabase
+      await dispatch(createConversationInSupabase(conversation));
+      dispatch(
+        storeMsgInSupabase({
+          msg: userMessage,
+          conversation_id: conversation.conversation_id,
+        })
+      );
+      await dispatch(
+        storeMsgInSupabase({
+          msg: updatedTalkerMsg,
+          conversation_id: conversation.conversation_id,
+        })
+      );
+      dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
+    } else {
+      dispatch(
+        storeMsgInSupabase({
+          msg: userMessage,
+          conversation_id: activeConversationId,
+        })
+      );
+      await dispatch(
+        storeMsgInSupabase({
+          msg: updatedTalkerMsg,
+          conversation_id: activeConversationId,
+        })
+      );
+      dispatch(updateIsNewMessage({ messageId: talkerMsg.id }));
+    }
+  };
+  // 2. handle webSearching
+  const handleWebSearching = async () => {
+    const userMessage = {
+      id: generateUniqueId(),
+      content: message,
+      sender: "user",
+    };
+
+    // Add user message to Redux state for immediate UI update
+    dispatch(addMsg(userMessage));
+    setMessage(""); // Clear the input field
+
+    // Adding talkerMessage immediately for better exprience
+    const talkerMsg = {
+      id: generateUniqueId(),
+      content: "",
+      sender: "TalKer",
+      isNewMessage: true, // for happening typewriterEffect only once
+    };
+    dispatch(addMsg(talkerMsg));
+
+    // Generate Talker response
+    let talkerResponseContent = "";
+    try {
+      const actualPrompt = await dispatch(
+        handleWebSearch({
+          query: userMessage.content,
+        })
+      ).unwrap();
+
+      const talkerResponseObj = await dispatch(
+        talkerResponse({
+          prompt: actualPrompt,
+          dummyMsgId: talkerMsg.id,
+        })
+      ).unwrap();
+
+      // Explicitly throwing the error if apiResponse is ok, But actual talkerResponse is missing
       if (!talkerResponseObj || !talkerResponseObj.talkerResponse) {
         throw new Error("TalkerAPI failed to generate Response !!!");
       }
@@ -502,6 +611,9 @@ const MsgInput = ({
               borderRadius: "25px",
               p: 0,
               pl: "5px",
+              ":hover": {
+                backgroundColor: "transparent",
+              },
             }}
           >
             <Language
@@ -575,7 +687,10 @@ const MsgInput = ({
                 /> */}
             {/* </IconButton> : */}
             <IconButton
-              onClick={handleSend}
+              onClick={() => {
+                if (isSearching) handleWebSearching();
+                else handleSend();
+              }}
               disabled={!message.trim()}
               sx={{
                 backgroundColor: !message.trim()
