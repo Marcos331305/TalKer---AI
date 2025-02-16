@@ -238,6 +238,7 @@ const MsgInput = ({
       const actualPrompt = await dispatch(
         handleWebSearch({
           query: userMessage.content,
+          dummyMsgId: talkerMsg.id,
         })
       ).unwrap();
 

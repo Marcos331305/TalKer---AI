@@ -93,6 +93,9 @@ export const messageSlice = createSlice({
     addMsg: (state, action) => {
       state.messages = [...state.messages, action.payload];
     },
+    setMessages: (state, action) => {
+      state.messages = action.payload;
+    },
     clearMessages: (state) => {
       state.messages = [];
     },
@@ -159,6 +162,6 @@ export const messageSlice = createSlice({
 });
 
 // Action creators are generated for each case reducer function
-export const { addMsg, clearMessages, delMessages } = messageSlice.actions;
+export const { addMsg, clearMessages, delMessages, setMessages } = messageSlice.actions;
 
 export default messageSlice.reducer;

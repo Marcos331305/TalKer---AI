@@ -1,8 +1,10 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { webSearchApi } from "../redux/webSearchApi";
 import { prepareDataForSummarization } from "../scripts/app";
+import { setMessages } from "./messageSlice";
 
 const initialState = {
+  messages: [],
   isSearching: false,
   searchResults: [],
   status: "idle", // 'idle' | 'loading' | 'succeeded' | 'failed'
@@ -12,12 +14,12 @@ const initialState = {
 // Async thunk for searching the web
 export const handleWebSearch = createAsyncThunk(
   "aiFeatures/handleWebSearch",
-  async ({ query }, { dispatch, rejectWithValue }) => {
+  async ({ query, dummyMsgId }, { getState, dispatch, rejectWithValue }) => {
+    let messages = getState().messages.messages;
     try {
-      // Call RTK Query's searchGoogle endpoint
-      const searchedResponse = await dispatch(
-        webSearchApi.endpoints.searchGoogle.initiate(query)
-      ).unwrap(); // `unwrap()` ensures we properly handle errors
+      // Initiate the search request
+      const searchAction = dispatch(webSearchApi.endpoints.searchGoogle.initiate(query));
+      const searchedResponse = await searchAction.unwrap(); // Ensure error handling
 
       const preparedData = await prepareDataForSummarization(searchedResponse);
 
@@ -27,7 +29,22 @@ export const handleWebSearch = createAsyncThunk(
 
       return actualPrompt;
     } catch (error) {
-      return rejectWithValue(error.message);
+      if (dummyMsgId) {
+        messages = messages.map((msg) =>
+          msg.id === dummyMsgId
+            ? {
+                ...msg,
+                content:
+                  "Oops, something went wrong. Please try again or try with a different prompt.",
+              }
+            : msg
+        );
+        dispatch(setMessages(messages));
+      }
+
+      return rejectWithValue({
+        error: error.message || "Failed to search the web",
+      });
     }
   }
 );
@@ -58,9 +75,8 @@ const aiFeaturesSlice = createSlice({
         state.results = action.payload;
       })
       .addCase(handleWebSearch.rejected, (state, action) => {
+        state.error = action.payload?.error || "An unknown error occurred";
         state.status = "failed";
-        state.error = action.payload;
-        console.error(action.payload);
       });
   },
 });
